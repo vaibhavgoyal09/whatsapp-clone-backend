@@ -1,16 +1,24 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
-from sqlalchemy.orm import sessionmaker
+from tortoise.contrib.fastapi import register_tortoise
 
 from app.core.config import settings
 
-engine = create_engine(settings.DATABASE_URI, pool_pre_ping=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+TORTOISE_ORM = {
+    "connections": {"default": f'{settings.DATABASE_URI}'},
+    "apps": {
+        "models": {
+            "models": ["data.model.user", "aerich.models"],
+            "default_connection": "default",
+        },
+    },
+}
 
 
-@as_declarative()
-class Base:
-
-    @declared_attr
-    def __tablename__(cls) -> str:
-        return cls.__name__.lower()
+def init_db(app):
+    register_tortoise(
+        app,
+        db_url=str(settings.DATABASE_URI),
+        modules={ "models": ["data.model.user"] },
+        generate_schemas=False,
+        add_exception_handlers=False
+    )

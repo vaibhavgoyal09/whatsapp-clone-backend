@@ -10,7 +10,7 @@ services:
 
 
   database:
-    image: postgres:12
+    image: postgres
     env_file:
       - .env
     ports:
