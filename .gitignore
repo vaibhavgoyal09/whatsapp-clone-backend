@@ -20,3 +20,6 @@ cover/
 
 # Environments
 .env
+
+firebase-adminsdk.json
+venv
