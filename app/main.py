@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api.v1.api import api_v1_router
-from app.auth.dependency import get_current_user
+from app import database
 
 
 def get_application():
@@ -21,11 +21,12 @@ def get_application():
 
 
 app = get_application()
+database.init_db(app)
 app.include_router(api_v1_router)
 
 
 @app.get('/')
-async def index_route(token = Depends(get_current_user)):
+async def index_route():
     return {
         "message": "Hello, World!"
     }
