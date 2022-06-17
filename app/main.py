@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
@@ -7,7 +7,7 @@ from app import database
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME)
+    _app = FastAPI(title=settings.PROJECT_NAME, debug=True)
 
     _app.add_middleware(
         CORSMiddleware,
@@ -21,7 +21,6 @@ def get_application():
 
 
 app = get_application()
-database.init_db(app)
 app.include_router(api_v1_router)
 
 

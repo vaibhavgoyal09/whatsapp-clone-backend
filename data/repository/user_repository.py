@@ -1,5 +1,5 @@
 from data.model.user import UserTable
-from domain.model.user import User
+from app.model.user import User
 from tortoise.expressions import Q
 
 

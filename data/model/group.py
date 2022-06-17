@@ -1,19 +1,17 @@
-from tortoise.models import Model
-from tortoise import fields
+from sqlalchemy import orm, Column, Integer, String
+from data.model.relations.user_group import user_group
+from app.database import Base
 
 
-class GroupTable(Model):
-    id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=20)
-    description = fields.TextField(null=True)
-    profile_image_url = fields.TextField(null=True)
-    admin_id = fields.IntField()
+class GroupTable(Base):
+    __tablename__ = "group"
 
-    users: fields.ManyToManyRelation['data.model.user.UserTable'] = fields.ManyToManyField(
-        'models.UserTable',
-        related_name='groups',
-        through='user_group'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(30), nullable=False)
+    description = Column(String, nullable=True)
+    profile_image_url = Column(String, nullable=True)
+    admin_id = Column(Integer, nullable=False)
+
+    users = orm.relationship(
+        "UserTable", secondary="user_group", backref="groups"
     )
-
-    class Meta:
-        table="group"

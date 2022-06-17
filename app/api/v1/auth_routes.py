@@ -12,5 +12,3 @@ async def register_user(
     auth_service: AuthService = Depends(get_auth_service)
 ):
     await auth_service.add_user(request)
-
-    

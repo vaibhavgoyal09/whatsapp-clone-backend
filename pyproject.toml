@@ -8,8 +8,11 @@ authors = ["vaibhavgoyal09 <79615436+vaibhavgoyal09@users.noreply.github.com>"]
 python = "^3.9"
 fastapi = {extras = ["all"], version = "^0.78.0"}
 firebase-admin = "^5.2.0"
-tortoise-orm = {extras = ["asyncpg"], version = "^0.19.1"}
-aerich = "^0.6.3"
+orjson = "^3.7.2"
+alembic = "^1.8.0"
+SQLAlchemy = {extras = ["asyncio"], version = "^1.4.37"}
+psycopg2 = "^2.9.3"
+asyncpg = "^0.25.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

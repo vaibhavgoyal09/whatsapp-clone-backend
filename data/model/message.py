@@ -1,6 +1,8 @@
-from tortoise.models import Model
-from tortoise import fields
 from enum import Enum
+from app.database import Base
+from sqlalchemy import Integer, Column, String, ForeignKey, DateTime
+from datetime import datetime
+from sqlalchemy.orm import relationship
 
 
 class MessageType(Enum):
@@ -10,22 +12,16 @@ class MessageType(Enum):
     gif = 3
 
 
-class MessageTable(Model):
-    id = fields.IntField(pk=True)
-    type = fields.IntField(default=MessageType.text.value)
-    message = fields.TextField(null=True)
-    media_url = fields.TextField(null=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
+class MessageTable(Base):
+    __tablename__ = "message"
 
-    sender = fields.ForeignKeyField(
-        'models.UserTable',
-        related_name='messages'
-    )
+    id = Column(Integer, primary_key=True)
+    type = Column(Integer, nullable=False, default=MessageType.text.value)
+    message = Column(String, nullable=True)
+    media_url = Column(String, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    sender_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    chat_id = Column(Integer, ForeignKey("chat.id"), nullable=False)
 
-    chat = fields.ForeignKeyField(
-        'models.ChatTable',
-        related_name='messages'
-    )
-
-    class Meta:
-        table = 'message'
+    sender = relationship("UserTable", back_populates="messages")
+    chat = relationship("ChatTable", back_populates="messages")

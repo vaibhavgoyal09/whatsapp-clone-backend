@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, status, Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth, credentials, initialize_app
 from app.auth.auth_service import AuthService, get_auth_service
+import traceback
 
 
 credential = credentials.Certificate('firebase-adminsdk.json')
@@ -21,9 +22,11 @@ def get_user_token(
 
     if cred is None:
         raise credentials_exception
+
     try:
-        decoded_token = auth.verify_id_token(credential.credentials)
+        decoded_token = auth.verify_id_token(cred.credentials)
     except Exception as err:
+        print(traceback.print_exc())
         raise credentials_exception
     res.headers['WWW-Authenticate'] = 'Bearer realm="auth_required"'
     return decoded_token

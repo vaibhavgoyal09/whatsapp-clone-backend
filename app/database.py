@@ -1,30 +1,26 @@
-from tortoise.contrib.fastapi import register_tortoise
-
-from app.core.config import settings
-
-
-TORTOISE_ORM = {
-    "connections": {"default": f'{settings.DATABASE_URI}'},
-    "apps": {
-        "models": {
-            "models":
-            ["data.model.user", "data.model.status", "data.model.chat",
-                "data.model.message", "data.model.group", "aerich.models"],
-            "default_connection": "default",
-        },
-    },
-}
+from app.core.config import get_settings
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from typing import AsyncIterator
+from sqlalchemy.exc import SQLAlchemyError
+import traceback
 
 
-def init_db(app):
-    register_tortoise(
-        app,
-        db_url=str(settings.DATABASE_URI),
-        modules={
-            "models":
-            ["data.model.user", "data.model.status", "data.model.chat",
-                "data.model.message", "data.model.group"]
-        },
-        generate_schemas=False,
-        add_exception_handlers=False
-    )
+DATABASE_URI = str(get_settings().DATABASE_URI)
+
+engine = create_async_engine(DATABASE_URI, echo=True, future=True)
+AsyncLocalSession = sessionmaker(
+    class_=AsyncSession, autocommit=False, autoflush=False, bind=engine)
+
+
+Base = declarative_base()
+
+
+# Dependency
+async def get_session() -> AsyncIterator[sessionmaker]:
+    try:
+        AsyncLocalSession
+    except SQLAlchemyError as e:
+        print(traceback.print_exc())

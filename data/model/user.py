@@ -1,18 +1,22 @@
-from tortoise.models import Model
-from tortoise import fields
+from app.database import Base
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 
-class UserTable(Model):
-    id = fields.IntField(pk=True)
-    firebase_uid = fields.TextField()
-    name = fields.CharField(max_length=40)
-    about = fields.TextField(null=True)
-    profile_image_url = fields.TextField(null=True)
-    phone_number = fields.CharField(max_length=20)
+class UserTable(Base):
+    __tablename__ = "user"
 
-    chats: fields.ReverseRelation['data.model.ChatTable']
-    statuses: fields.ReverseRelation['data.model.status.StatusTable']
-    groups: fields.ManyToManyRelation['data.model.group.GroupTable']
+    id = Column(Integer, primary_key=True, index=True)
+    firebase_uid = Column(String)
+    name = Column(String(30))
+    about = Column(String)
+    profile_image_url = Column(String)
+    phone_number = Column(String(20))
 
-    class Meta:
-        table = "user"
+    statuses = relationship(
+        "StatusTable", back_populates="user", cascade="all, delete-orphan"
+    ) 
+
+    messages = relationship(
+        "MessageTable", back_populates="sender"
+    )

@@ -1,7 +1,6 @@
-
 from typing import Any, Dict, List, Optional, Union
-
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
+from functools import lru_cache
 
 
 class Settings(BaseSettings):
@@ -19,6 +18,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
+    POSTGRES_HOST: str
     DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("DATABASE_URI", pre=True)
@@ -26,10 +26,10 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
-            scheme="postgres",
+            scheme="postgresql+asyncpg",
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
-            host="0.0.0.0",
+            host=values.get("POSTGRES_HOST"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
     
@@ -38,4 +38,6 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
-settings = Settings()
+@lru_cache
+def get_settings():
+    return Settings()

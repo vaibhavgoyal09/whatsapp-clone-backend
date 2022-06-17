@@ -1,6 +1,7 @@
-from tortoise.models import Model
-from tortoise import fields
+from sqlalchemy import orm, Column, Integer, String, Boolean
 from enum import Enum
+from app.database import Base
+from data.model.relations.user_chat import user_chat
 
 
 class ChatType(Enum):
@@ -8,20 +9,19 @@ class ChatType(Enum):
     group = 1
 
 
-class ChatTable(Model):
-    id = fields.IntField(pk=True)
-    type = fields.IntField(default=ChatType.one_to_one.value)
-    is_pinned = fields.BooleanField(default=False)
-    unseen_message_count = fields.IntField(default=0)
-    last_message_id = fields.IntField(null=True)
-    group_id = fields.IntField(null=True)
+class ChatTable(Base):
+    __tablename__ = "chat"
 
-    user = fields.ForeignKeyField(
-        'models.UserTable',
-        related_name = "chats"
+    id = Column(Integer, primary_key=True)
+    type = Column(Integer, nullable=False, default=ChatType.one_to_one.value)
+    unseen_message_count = Column(Integer, nullable=False, default=0)
+    last_message_id = Column(Integer, nullable=True)
+    group_id = Column(Integer, nullable=True)
+
+    users = orm.relationship(
+        "UserTable", secondary="user_chat", backref='chats'  
     )
 
-    messages: fields.ReverseRelation['data.model.message']
-
-    class Meta:
-        table = "chat"
+    messages = orm.relationship(
+        "MessageTable", back_populates="chat"
+    )

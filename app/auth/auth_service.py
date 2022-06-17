@@ -1,5 +1,5 @@
 from data.repository.user_repository import UserRepository
-from domain.model.user import User
+from app.model.user import User
 from app.model.request.register_user import RegisterUser
 from fastapi import Depends, HTTPException, status
 import traceback
