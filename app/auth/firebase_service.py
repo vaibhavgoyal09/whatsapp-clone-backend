@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status, Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth, credentials, initialize_app
-from app.auth.auth_service import AuthService, get_auth_service
+from app.auth.auth_service import AuthService
 import traceback
 
 
@@ -38,7 +38,7 @@ def get_current_user_uid(token=Depends(get_user_token)) -> str:
 
 async def get_current_user(
     firebase_uid=Depends(get_current_user_uid),
-    service: AuthService = Depends(get_auth_service)
+    service: AuthService = Depends()
 ):
     user = await service.get_user_by_firebase_uid(firebase_uid)
 

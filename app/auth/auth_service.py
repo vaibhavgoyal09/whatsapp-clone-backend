@@ -7,7 +7,7 @@ import traceback
 
 class AuthService:
 
-    def __init__(self, repository: UserRepository):
+    def __init__(self, repository: UserRepository = Depends()):
         self.user_repository = repository
 
     async def get_user_by_firebase_uid(self, firebase_uid: int) -> User:
@@ -17,7 +17,7 @@ class AuthService:
             print(traceback.format_exc())
             return None
 
-    async def add_user(self, request: RegisterUser):
+    async def handle_add_user(self, request: RegisterUser):
         try:
             self.user_repository.add_user(
                 name=request.name,
@@ -31,7 +31,3 @@ class AuthService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail="An unknown error occurred"
             )
-
-
-def get_auth_service(repository: UserRepository = Depends()) -> AuthService:
-    return AuthService(repository)

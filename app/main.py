@@ -1,17 +1,16 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
+from app.core.config import get_settings
 from app.api.v1.api import api_v1_router
-from app import database
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME, debug=True)
+    _app = FastAPI(title=get_settings().PROJECT_NAME, debug=True)
 
     _app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_origins=[str(origin) for origin in get_settings().BACKEND_CORS_ORIGINS],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
