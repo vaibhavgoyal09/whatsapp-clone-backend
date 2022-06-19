@@ -10,7 +10,8 @@ def get_application():
 
     _app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in get_settings().BACKEND_CORS_ORIGINS],
+        allow_origins=[str(origin)
+                       for origin in get_settings().BACKEND_CORS_ORIGINS],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -21,6 +22,17 @@ def get_application():
 
 app = get_application()
 app.include_router(api_v1_router)
+
+
+# For debugging use only
+
+from app.auth.firebase_service import get_current_user_uid
+
+def override_get_current_user_uid() -> str:
+    return "dnPBigVSLbUrZIkQrj0kWafjdJq2"
+
+
+app.dependency_overrides[get_current_user_uid] = override_get_current_user_uid
 
 
 @app.get('/')
