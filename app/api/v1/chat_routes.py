@@ -9,7 +9,6 @@ router = APIRouter(prefix='/chat', tags=['chat'])
 
 @router.get('/all')
 async def get_all_chats(
-    other_user_id: str,
     service: ChatService = Depends(),
     user: User = Depends(get_current_user)
 ):

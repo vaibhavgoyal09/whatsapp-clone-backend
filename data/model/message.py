@@ -3,13 +3,7 @@ from app.database import Base
 from sqlalchemy import Integer, Column, String, ForeignKey, Float
 from datetime import datetime
 from sqlalchemy.orm import relationship
-
-
-class MessageType(Enum):
-    text = 0
-    audio = 1
-    video = 2
-    gif = 3
+from app.model.message import MessageType
 
 
 class MessageTable(Base):
@@ -19,8 +13,7 @@ class MessageTable(Base):
     type = Column(Integer, nullable=False, default=MessageType.text.value)
     message = Column(String, nullable=True)
     media_url = Column(String, nullable=True)
-    created_at = Column(Float, nullable=False,
-                        default=datetime.timestamp(datetime.utcnow()))
+    created_at = Column(Integer, nullable=False, default=int(datetime.timestamp(datetime.utcnow())))
     sender_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     chat_id = Column(Integer, ForeignKey("chat.id"), nullable=False)
 
