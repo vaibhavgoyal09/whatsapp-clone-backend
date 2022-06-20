@@ -1,7 +1,7 @@
 from sqlalchemy import orm, Column, Integer, String, Boolean
 from enum import Enum
 from app.database import Base
-from data.model.relations.user_chat import user_chat
+from .relations.user_chat import user_chat
 
 
 class ChatTable(Base):
@@ -12,7 +12,7 @@ class ChatTable(Base):
     last_message_id = Column(Integer, nullable=True)
 
     users = orm.relationship(
-        "UserTable", secondary="user_chat", backref='chats'  
+        "UserTable", secondary=user_chat, back_populates='chats'
     )
 
     messages = orm.relationship(

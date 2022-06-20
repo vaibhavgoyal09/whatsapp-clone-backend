@@ -1,6 +1,6 @@
 from sqlalchemy import orm, Column, Integer, String
-from data.model.relations.user_group import user_group
 from app.database import Base
+from .relations.user_group import user_group
 
 
 class GroupTable(Base):
@@ -13,5 +13,5 @@ class GroupTable(Base):
     admin_id = Column(Integer, nullable=False)
 
     users = orm.relationship(
-        "UserTable", secondary="user_group", backref="groups"
+        "UserTable", secondary=user_group, back_populates="groups"
     )

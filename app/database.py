@@ -20,7 +20,5 @@ Base = declarative_base()
 
 # Dependency
 async def get_session() -> AsyncIterator[sessionmaker]:
-    try:
-        yield AsyncLocalSession()
-    except SQLAlchemyError as e:
-        print(traceback.print_exc())
+    async with AsyncLocalSession() as session:
+        yield session

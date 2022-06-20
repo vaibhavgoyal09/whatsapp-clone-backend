@@ -18,13 +18,36 @@ class UserRepository:
         profile_image_url: str,
         phone_number: str
     ):
-        pass
+        user = UserTable(
+            firebase_uid=firebase_uid,
+            name=name,
+            about=about,
+            phone_number=phone_number,
+            profile_image_url=profile_image_url
+        )
 
-    async def get_user_by_firebase_uid(self, firebase_uid: int) ->User :
+        self.db_session.add(user)
+
+        try:
+            await self.db_session.commit()
+        except:
+            await self.db_session.rollback()
+            raise
+
+    async def get_user_by_firebase_uid(self, firebase_uid: int) -> User:
         query = select(UserTable).where(UserTable.firebase_uid == firebase_uid)
 
         users = await self.db_session.execute(query)
-        return users.scalars().one()
+        user_table = users.first().UserTable
+
+        return User(
+            id=user_table.id,
+            firebase_uid=user_table.firebase_uid,
+            name=user_table.name,
+            about=user_table.about,
+            phone_number=user_table.phone_number,
+            profile_image_url=user_table.profile_image_url
+        )
 
     async def update_user(
         self
