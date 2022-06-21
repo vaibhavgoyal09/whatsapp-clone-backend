@@ -1,6 +1,6 @@
 from sqlalchemy import orm, Column, Integer, String, Boolean
 from enum import Enum
-from app.database import Base
+from data.database import Base
 from .relations.user_chat import user_chat
 
 

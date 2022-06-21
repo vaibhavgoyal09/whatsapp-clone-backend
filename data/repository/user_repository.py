@@ -1,7 +1,7 @@
 from data.model.user import UserTable
 from app.model.user import User
 from fastapi import Depends
-from app.database import get_session
+from data.database import get_session
 from sqlalchemy.future import select
 
 

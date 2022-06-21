@@ -1,7 +1,7 @@
 from data.model.message import MessageTable
 from sqlalchemy import select
 from fastapi import Depends
-from app.database import get_session
+from data.database import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.model.message import Message, MessageType

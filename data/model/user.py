@@ -1,4 +1,4 @@
-from app.database import Base
+from data.database import Base
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from .relations.user_chat import user_chat

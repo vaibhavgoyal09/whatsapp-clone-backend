@@ -1,5 +1,5 @@
 from sqlalchemy import orm, Column, Integer, String
-from app.database import Base
+from data.database import Base
 from .relations.user_group import user_group
 
 

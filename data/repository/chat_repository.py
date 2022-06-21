@@ -2,7 +2,7 @@ from data.model.chat import ChatTable
 from typing import List
 from app.model.user import User
 from fastapi import Depends
-from app.database import get_session
+from data.database import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from data.model.user import UserTable

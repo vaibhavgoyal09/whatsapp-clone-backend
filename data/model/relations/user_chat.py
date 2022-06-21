@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, ForeignKey
-from app.database import Base
+from data.database import Base
 
 
 user_chat = Table(
