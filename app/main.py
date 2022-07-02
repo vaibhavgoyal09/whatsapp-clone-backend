@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 from app.core.config import get_settings
-from app.api.v1.api import api_v1_router
+from app.api.api import api_v1_router
 
 
 def get_application():
@@ -17,6 +18,9 @@ def get_application():
         allow_headers=["*"],
     )
 
+    if not os.path.exists('static'):
+        os.makedirs('static')
+
     return _app
 
 
@@ -26,13 +30,13 @@ app.include_router(api_v1_router)
 
 # For debugging use only
 
-from app.auth.firebase_service import get_current_user_uid
+# from app.auth.firebase_service import get_current_user_uid
 
-def override_get_current_user_uid() -> str:
-    return "dnPBigVSLbUrZIkQrj0kWafjdJq2"
+# def override_get_current_user_uid() -> str:
+#     return "dnPBigVSLbUrZIkQrj0kWafjdJq2"
 
 
-app.dependency_overrides[get_current_user_uid] = override_get_current_user_uid
+# app.dependency_overrides[get_current_user_uid] = override_get_current_user_uid
 
 
 @app.get('/')

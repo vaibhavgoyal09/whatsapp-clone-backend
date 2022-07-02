@@ -17,11 +17,11 @@ class AuthService:
             print(traceback.format_exc())
             return None
 
-    async def handle_add_user(self, request: RegisterUser):
+    async def handle_add_user(self, request: RegisterUser, user_firebase_uid: str):
         try:
             self.user_repository.add_user(
                 name=request.name,
-                firebase_uid=request.firebase_uid,
+                firebase_uid=user_firebase_uid,
                 about=request.about,
                 profile_image_url=request.profile_image_url,
                 phone_number=request.phone_number)
