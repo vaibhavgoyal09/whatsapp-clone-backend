@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.api.api import api_v1_router
@@ -17,6 +18,7 @@ def get_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    _app.mount("/static", StaticFiles(directory="static"), name="static")
 
     if not os.path.exists('static'):
         os.makedirs('static')

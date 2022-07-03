@@ -19,7 +19,7 @@ class AuthService:
 
     async def handle_add_user(self, request: RegisterUser, user_firebase_uid: str):
         try:
-            self.user_repository.add_user(
+            await self.user_repository.add_user(
                 name=request.name,
                 firebase_uid=user_firebase_uid,
                 about=request.about,

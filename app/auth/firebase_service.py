@@ -14,6 +14,8 @@ def get_user_token(
     cred: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False))
 ):
 
+    print(cred.credentials)
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Bearer authentication is needed",
