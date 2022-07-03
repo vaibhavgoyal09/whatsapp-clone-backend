@@ -7,18 +7,27 @@ from app.utils.result_wrapper import *
 from fastapi.responses import ORJSONResponse
 
 
-router = APIRouter(prefix='/user', tags=["user"])
+router = APIRouter(prefix="/user", tags=["user"])
 
 
-@router.post('/register')
+@router.post("/register")
 async def register_user(
     request: RegisterUser,
     user_firebase_uid: str = Depends(get_current_user_uid),
-    auth_service: UserService = Depends()
+    user_service: UserService = Depends(),
 ):
-    result: ResultWrapper = await auth_service.add_user(request, user_firebase_uid)
+    result: ResultWrapper = await user_service.add_user(request, user_firebase_uid)
     print(result)
     if isinstance(result, Error):
         raise HTTPException(result.code, detail=result.message)
     else:
         return ORJSONResponse(result)
+
+
+@router.get("/{phone_number}")
+async def check_if_user_exists(phone_number: str, service: UserService = Depends()):
+    result = await service.get_user_by_phone_number(phone_number)
+    if isinstance(result, Error):
+        raise HTTPException(result.code, detail=result.message)
+    
+    return ORJSONResponse(result)
