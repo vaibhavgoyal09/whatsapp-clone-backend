@@ -22,9 +22,9 @@ class AuthService:
         self, request: RegisterUser, user_firebase_uid: str
     ) -> ResultWrapper[RegisterUserResponse]:
         try:
-            # user = await self.user_repository.get_user_by_phone_number(request.phone_number)
-            # if user and isinstance(user, User):
-            #     return Error(message=f'User with phone number {request.phone_number} already exists')
+            user = await self.user_repository.get_user_by_phone_number(request.phone_number)
+            if user and isinstance(user, User):
+                return Error(message=f'User with phone number {request.phone_number} already exists')
             user_id = await self.user_repository.add_user(
                 name=request.name,
                 firebase_uid=user_firebase_uid,
