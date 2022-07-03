@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.chat.chat_service import ChatService
-from app.auth.firebase_service import get_current_user
+from app.user.firebase_service import get_current_user
 from app.model.user import User
 
 

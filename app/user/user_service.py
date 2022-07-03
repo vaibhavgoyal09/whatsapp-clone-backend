@@ -7,7 +7,7 @@ from app.utils.result_wrapper import *
 from app.model.response.register_user_response import RegisterUserResponse
 
 
-class AuthService:
+class UserService:
     def __init__(self, repository: UserRepository = Depends()):
         self.user_repository = repository
 
@@ -46,4 +46,4 @@ class AuthService:
                 return result
         except Exception as e:
             print(traceback.format_exc())
-            return Error(message=e.__str__)
+            return Error(message='Something Went Wrong')
