@@ -23,4 +23,5 @@ cover/
 
 firebase-adminsdk.json
 venv
-migrations
+alembic
+static
