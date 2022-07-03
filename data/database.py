@@ -12,7 +12,8 @@ DATABASE_URI = str(get_settings().DATABASE_URI)
 
 engine = create_async_engine(DATABASE_URI, echo=True, future=True)
 AsyncLocalSession = sessionmaker(
-    class_=AsyncSession, autocommit=False, autoflush=False, bind=engine)
+    class_=AsyncSession, autocommit=False, autoflush=False, bind=engine
+)
 
 
 Base = declarative_base()

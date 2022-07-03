@@ -6,14 +6,9 @@ T = TypeVar("T")
 
 
 @dataclass
-class Success(Generic[T]):
-    data: T
-
-
-@dataclass
 class Error:
-    code: int
+    code: int = 400
     message: str = ""
 
 
-ResultWrapper = Union[Success[T], Error]
+ResultWrapper = Union[T, Error]
