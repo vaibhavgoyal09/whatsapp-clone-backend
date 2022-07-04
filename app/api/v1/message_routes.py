@@ -1,5 +1,5 @@
 from fastapi import Depends, APIRouter
-from app.message.message_service import MessageService
+from app.service.message_service import MessageService
 
 
 router = APIRouter(prefix='/message', tags=['message'])

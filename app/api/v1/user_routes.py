@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.model.request.register_user import RegisterUser
-from app.user.user_service import UserService
-from app.model.user import User
-from app.user.firebase_service import get_current_user_uid
+from app.service.user_service import UserService
+from app.service.firebase_service import get_current_user_uid
 from app.utils.result_wrapper import *
 from fastapi.responses import ORJSONResponse
 

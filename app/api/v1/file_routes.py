@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, Depends, HTTPException
-from app.file.file_service import FileService
+from app.service.file_service import FileService
 from app.utils.result_wrapper import *
 from fastapi.responses import ORJSONResponse
 

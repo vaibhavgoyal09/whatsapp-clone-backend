@@ -24,3 +24,4 @@ cover/
 firebase-adminsdk.json
 venv
 alembic
+static

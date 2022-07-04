@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status, Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth, credentials, initialize_app
-from app.user.user_service import UserService
+from app.service.user_service import UserService
 import traceback
 
 

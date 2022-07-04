@@ -18,10 +18,11 @@ def get_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    _app.mount("/static", StaticFiles(directory="static"), name="static")
 
     if not os.path.exists('static'):
         os.makedirs('static')
+
+    _app.mount("/static", StaticFiles(directory="static"), name="static")
 
     return _app
 
