@@ -61,7 +61,12 @@ class UserRepository:
         query = select(UserTable).where(UserTable.phone_number.like(f"%{phone_number}%"))
 
         users = await self.db_session.execute(query)
-        user_table = users.first().UserTable
+        user_table_obj = users.first()
+        
+        if user_table_obj is None:
+            raise Exception('User not found')
+        
+        user_table = user_table_obj.UserTable
 
         return User(
             id=user_table.id,

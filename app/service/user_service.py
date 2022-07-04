@@ -22,7 +22,7 @@ class UserService:
         self, request: RegisterUser, user_firebase_uid: str
     ) -> ResultWrapper[RegisterUserResponse]:
         try:
-            user = await self.user_repository.get_user_by_phone_number(request.phone_number)
+            user = await self.get_user_by_phone_number(request.phone_number)
             if user and isinstance(user, User):
                 return Error(message=f'User with phone number {request.phone_number} already exists')
             user_id = await self.user_repository.add_user(
@@ -30,16 +30,16 @@ class UserService:
                 firebase_uid=user_firebase_uid,
                 about=request.about,
                 profile_image_url=request.profile_image_url,
-                phone_number=request.phone_number,
+                phone_number=request.phone_number.replace(" ", ""),
             )
             return RegisterUserResponse(user_id)
         except Exception as e:
             print(traceback.format_exc())
             return Error(message='Something Went Wrong')
 
-    async def get_user_by_phone_number(self, phone_number)-> ResultWrapper[User]:
+    async def get_user_by_phone_number(self, phone_number: str)-> ResultWrapper[User]:
         try:
-            result = await self.user_repository.get_user_by_phone_number(phone_number)
+            result = await self.user_repository.get_user_by_phone_number(phone_number.replace(" ", ""))
             if result is None:
                 return Error(message='user not found')
             else:
