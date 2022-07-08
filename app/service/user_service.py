@@ -5,6 +5,7 @@ from fastapi import Depends
 import traceback
 from app.utils.result_wrapper import *
 from app.model.response.register_user_response import RegisterUserResponse
+from typing import List
 
 
 class UserService:
@@ -44,6 +45,13 @@ class UserService:
                 return Error(message='user not found')
             else:
                 return result
+        except Exception as e:
+            print(traceback.format_exc())
+            return Error(message='Something Went Wrong')
+
+    async def search_users_by_phone_number(self, query_value: str) -> ResultWrapper[List[User]]:
+        try:
+            return await self.user_repository.search_users_by_phone_number(query_value.replace(" ", ""))
         except Exception as e:
             print(traceback.format_exc())
             return Error(message='Something Went Wrong')

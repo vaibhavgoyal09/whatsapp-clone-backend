@@ -23,10 +23,22 @@ async def register_user(
         return ORJSONResponse(result)
 
 
-@router.get("/{phone_number}")
+@router.get("/check_exists/{phone_number}")
 async def check_if_user_exists(phone_number: str, service: UserService = Depends()):
     result = await service.get_user_by_phone_number(phone_number)
     if isinstance(result, Error):
         raise HTTPException(result.code, detail=result.message)
-    
+
+    return ORJSONResponse(result)
+
+
+@router.get("/search")
+async def search_users_by_phone_number(
+    phone_number: str, service: UserService = Depends()
+):
+    print(f'Phone Number Query is {phone_number}')
+    result = await service.search_users_by_phone_number(phone_number)
+    if isinstance(result, Error):
+        raise HTTPException(result.code, detail=result.message)
+
     return ORJSONResponse(result)

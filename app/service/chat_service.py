@@ -46,4 +46,4 @@ class ChatService:
 
         except Exception as e:
             print(traceback.print_exc())
-            return Error(message=e)
+            return Error(message='Something Went Wrong')
