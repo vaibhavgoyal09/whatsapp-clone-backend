@@ -57,6 +57,19 @@ class UserRepository:
             profile_image_url=user_table.profile_image_url,
         )
 
+    async def get_user_by_id(self, user_id: str) -> User:
+        query = select(UserTable).where(UserTable.id == user_id)
+        user = self.db_session.execute(query).one().UserTable
+
+        return User(
+            id=user.id,
+            firebase_uid=user.firebase_uid,
+            name=user.name,
+            about=user.about,
+            phone_number=user.phone_number,
+            profile_image_url=user.profile_image_url
+        )
+
     async def get_user_by_phone_number(self, phone_number) -> User:
 
         query = select(UserTable).where(

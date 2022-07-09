@@ -1,12 +1,13 @@
-from data.model.chat import ChatTable
 from typing import List
+
 from app.model.user import User
-from fastapi import Depends
 from data.database import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from data.model.user import UserTable
+from data.model.chat import ChatTable
 from data.model.relations.user_chat import user_chat
+from data.model.user import UserTable
+from fastapi import Depends
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ChatRepository:
@@ -16,16 +17,22 @@ class ChatRepository:
 
     async def create_new_chat(
         self,
-        users: List[User],
-        message_id: str
-    ):
+        users: List[User]
+    ) -> str:
         chat = ChatTable(
-            last_message_id=message_id,
+            last_message_id=None,
             users=users
         )
 
         await self.db_session.add(chat)
         await self.db_session.commit()
+        await self.db_session.refresh(chat)
+
+        return chat.id
+
+    async def get_chat_by_id(self, chat_id: str) -> ChatTable:
+        query = select(ChatTable).where(ChatTable.id == chat_id)
+        return await self.db_session.execute(query).one().ChatTable
 
     async def get_all_chats_for_user(self, user_self: User) -> List[ChatTable]:
         query = select(ChatTable).\

@@ -17,3 +17,18 @@ async def get_all_chats(
         raise HTTPException(status_code=result.code, detail=result.message)
     else:
         return ORJSONResponse(result)
+
+
+@router.post("/chat/create")
+async def create_new_chat(
+    remote_user_id: str,
+    service: ChatService = Depends(),
+    user: User = Depends(get_current_user),
+):
+    result = await service.create_new_chat(
+        current_user=user, remote_user_id=remote_user_id
+    )
+    if isinstance(result, Error):
+        raise HTTPException(status_code=result.code, detail=result.message)
+    else:
+        return ORJSONResponse(result)
