@@ -6,6 +6,7 @@ from data.database import get_session
 from data.model.user import UserTable
 from fastapi import Depends
 from sqlalchemy.future import select
+from sqlalchemy import asc, desc
 
 
 class UserRepository:
@@ -42,12 +43,8 @@ class UserRepository:
             await self.db_session.rollback()
             raise e
 
-    async def get_user_by_firebase_uid(self, firebase_uid: int) -> User:
-        query = select(UserTable).where(UserTable.firebase_uid == firebase_uid)
-
-        users = await self.db_session.execute(query)
-        user_table = users.first().UserTable
-
+    async def get_user_by_firebase_uid(self, firebase_uid: str) -> User:
+        user_table = await self.get_raw_user_by_firebase_uid(firebase_uid)
         return User(
             id=user_table.id,
             firebase_uid=user_table.firebase_uid,
@@ -57,18 +54,15 @@ class UserRepository:
             profile_image_url=user_table.profile_image_url,
         )
 
-    async def get_user_by_id(self, user_id: str) -> User:
-        query = select(UserTable).where(UserTable.id == user_id)
-        user = self.db_session.execute(query).one().UserTable
+    async def get_raw_user_by_firebase_uid(self, firebase_uid: str) -> UserTable:
+        query = select(UserTable).where(UserTable.firebase_uid == firebase_uid)
+        users = await self.db_session.execute(query)
+        return users.first().UserTable
 
-        return User(
-            id=user.id,
-            firebase_uid=user.firebase_uid,
-            name=user.name,
-            about=user.about,
-            phone_number=user.phone_number,
-            profile_image_url=user.profile_image_url
-        )
+    async def get_raw_user_by_id(self, user_id: int) -> UserTable:
+        query = select(UserTable).where(UserTable.id == user_id)
+        result = await self.db_session.execute(query)
+        return result.first().UserTable
 
     async def get_user_by_phone_number(self, phone_number) -> User:
 
@@ -94,7 +88,11 @@ class UserRepository:
         )
 
     async def search_users_by_phone_number(self, query_value: str) -> List[User]:
-        query = select(UserTable).where(UserTable.phone_number.like(f"%{query_value}%"))
+        query = (
+            select(UserTable)
+            .where(UserTable.phone_number.like(f"%{query_value}%"))
+            .order_by(asc(UserTable.phone_number))
+        )
 
         users_obj = await self.db_session.execute(query)
 

@@ -16,6 +16,7 @@ class ChatService:
         user_repository: UserRepository = Depends(),
     ):
         self.chat_repository = chat_repository
+        self.user_repository = user_repository
 
     async def get_all_chats(self, user_self: User) -> ResultWrapper[List[Chat]]:
         try:
@@ -52,12 +53,25 @@ class ChatService:
             return Error(message="Something Went Wrong")
 
     async def create_new_chat(
-        self, current_user: User, remote_user_id: str
+        self, current_user: User, remote_user_id: int
     ) -> ResultWrapper[str]:
         try:
-            remote_user = await self.user_repository.get_user_by_id(remote_user_id)
-            return await self.chat_repository.create_new_chat(
-                [current_user, remote_user]
-            )
+            # doesChatExists = await self.chat_repository.get_chat_id_where_users(
+            #     user_ids=[current_user.id, remote_user_id]
+            # )
+            doesChatExists = False
+            if doesChatExists:
+                raise Exception("Chat Already exists")
+            else:
+                current_user = await self.user_repository.get_raw_user_by_id(
+                    current_user.id
+                )
+                remote_user = await self.user_repository.get_raw_user_by_id(
+                    remote_user_id
+                )
+                return await self.chat_repository.create_new_chat(
+                    users=[current_user, remote_user]
+                )
         except Exception as e:
+            print(traceback.format_exc())
             return Error(message="Something Went Wrong")
