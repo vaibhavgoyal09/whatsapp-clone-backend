@@ -76,8 +76,8 @@ class ChatService:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
 
-        async def update_last_message(self, message_id: int):
-            try:
-                await self.chat_repository.update_last_message(last_message_id=message_id)
-            except:
-                print(traceback.format_exc()) 
+    async def update_last_message(self, message_id: int, chat_id: int):
+        try:
+            await self.chat_repository.update_last_message(last_message_id=message_id, chat_id=chat_id)
+        except:
+            print(traceback.format_exc()) 

@@ -1,12 +1,17 @@
 from dataclasses import dataclass
 from typing import Union
 from app.model.message import MessageType
+from app.model.add_message_request import AddMessageRequest
+from enum import Enum
+
+
+class WsMessageType(Enum):
+   message = 0
+   audio_call = 1
+   video_call = 2
 
 
 @dataclass
 class WsMessage:
-   to_id: int
-   chat_id: int
-   text: Union[str, None] = None
-   media_url: Union[str, None] = None
-   type: int = MessageType.text.value
+   type: int
+   message: Union[AddMessageRequest]

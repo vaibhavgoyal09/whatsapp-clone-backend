@@ -18,7 +18,6 @@ class MessageRepository:
         request: AddMessageRequest
     ) -> Message:
         message_obj = MessageTable(
-            type=request.type,
             message=request.text,
             media_url=request.media_url,
             sender_id=request.own_user_id,
@@ -27,6 +26,8 @@ class MessageRepository:
         self.db_session.add(message_obj)
         await self.db_session.commit()
         await self.db_session.refresh(message_obj)
+
+        print(message_obj)
 
         message = Message(
             id=message_obj.id,

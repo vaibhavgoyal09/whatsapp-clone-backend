@@ -32,7 +32,7 @@ class Settings(BaseSettings):
             host=values.get("POSTGRES_HOST"),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
-    
+
     class Config:
         case_sensitive = True
         env_file = ".env"
