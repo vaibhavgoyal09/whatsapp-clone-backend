@@ -6,6 +6,7 @@ from app.utils.result_wrapper import *
 from data.repository.message_repository import MessageRepository
 from fastapi import Depends, HTTPException
 from fastapi.responses import ORJSONResponse
+from app.model.add_message_request import AddMessageRequest
 
 
 class MessageService:
@@ -23,4 +24,11 @@ class MessageService:
             return messages
         except:
             print(traceback.print_exc())
+            return Error(message="Something Went Wrong")
+
+    async def add_message(self, request: AddMessageRequest) -> ResultWrapper[Message]:
+        try:
+            return await self.message_repository.add_message(request)
+        except Exception as e:
+            print(traceback.format_exc())
             return Error(message="Something Went Wrong")

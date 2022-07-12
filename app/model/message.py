@@ -19,4 +19,4 @@ class Message:
     sender_id: str
     chat_id: str
     media_url: Union[str, None]
-    created_at: int = int(datetime.timestamp(datetime.utcnow()))
+    created_at: int

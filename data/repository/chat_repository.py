@@ -6,7 +6,7 @@ from data.model.chat import ChatTable
 from data.model.relations.user_chat import user_chat
 from data.model.user import UserTable
 from fastapi import Depends
-from sqlalchemy import select, or_
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Union
 
@@ -32,9 +32,10 @@ class ChatRepository:
     #     query = (
     #         select(ChatTable.id.label("id"))
     #         .join(user_chat, user_chat.c.chat_id == ChatTable.id)
-    #         .where(user_chat.c.user_id.in_(user_ids))
+    #         .where(and_(user_chat.c.user_id.in_([user_ids[0]]), user_chat.c.user_id.in_([user_ids[1]])))
     #     )
     #     result = await self.db_session.execute(query)
+    #     return result.first().id
         
     async def get_all_chats_for_user(self, user_self: User) -> List[ChatTable]:
         query = (
@@ -67,3 +68,9 @@ class ChatRepository:
             users.append(result)
 
         return users
+
+    async def update_last_message(self, chat_id: int, last_message_id: int):
+        chat_obj = await self.get_chat_by_id(chat_id)
+        chat_obj.last_message_id = last_message_id
+        await self.db_session.flush()
+        await self.db_session.commit()
