@@ -5,6 +5,7 @@ from app.service.firebase_service import get_current_user_uid, get_current_user
 from app.utils.result_wrapper import *
 from fastapi.responses import ORJSONResponse
 from app.model.user import User
+from app.model.request.update_user_request import UpdateUserRequest
 
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -48,3 +49,10 @@ async def search_users_by_phone_number(
         raise HTTPException(result.code, detail=result.message)
 
     return ORJSONResponse(result)
+
+
+@router.put('/update')
+async def update_user_details(request: UpdateUserRequest, user_uid: str = Depends(get_current_user_uid), service: UserService = Depends()):
+    result = await service.update_user_details(user_uid, request)
+    if isinstance(result, Error):
+        raise HTTPException(result.code, detail=result.message)

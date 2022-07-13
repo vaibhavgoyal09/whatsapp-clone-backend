@@ -6,6 +6,7 @@ import traceback
 from app.utils.result_wrapper import *
 from app.model.response.register_user_response import RegisterUserResponse
 from typing import List
+from app.model.request.update_user_request import UpdateUserRequest
 
 
 class UserService:
@@ -55,3 +56,10 @@ class UserService:
         except Exception as e:
             print(traceback.format_exc())
             return Error(message='Something Went Wrong')
+
+    async def update_user_details(self, user_uid:str, request: UpdateUserRequest) -> ResultWrapper[None]:
+        try:
+            return await self.user_repository.update_user_details(user_uid, request)
+        except:
+            print(traceback.format_exc())
+            return Error(message="Something Went Wrong")

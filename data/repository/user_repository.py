@@ -7,6 +7,7 @@ from data.model.user import UserTable
 from fastapi import Depends
 from sqlalchemy.future import select
 from sqlalchemy import asc, desc
+from app.model.request.update_user_request import UpdateUserRequest
 
 
 class UserRepository:
@@ -111,5 +112,15 @@ class UserRepository:
             users.append(user)
         return users
 
-    async def update_user_details(self):
-        pass
+    async def update_user_details(self, user_uid: str, request: UpdateUserRequest):
+        user = await self.get_raw_user_by_firebase_uid(user_uid)
+
+        if request.name:
+            user.name = request.name
+        if request.about:
+            user.about = request.about
+        if request.profile_image_url or request.should_remove_profile_photo:
+            user.profile_image_url = request.profile_image_url
+
+        await self.db_session.flush()
+        await self.db_session.commit()
