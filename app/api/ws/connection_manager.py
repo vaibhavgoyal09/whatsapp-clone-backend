@@ -13,7 +13,7 @@ class ConnectionManager:
         self.online_users.pop(user_id)
 
     def get_websocket_for_user(self, user_id: int) -> WebSocket:
-        return self.online_users[user_id]
+        return self.online_users.get(user_id)
 
 
 manager = ConnectionManager()

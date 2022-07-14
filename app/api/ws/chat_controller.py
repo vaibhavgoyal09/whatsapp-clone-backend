@@ -9,6 +9,7 @@ from app.utils.result_wrapper import *
 import orjson
 from functools import lru_cache
 from app.api.ws.connection_manager import manager
+from dataclasses import asdict
 
 
 class ChatController:
@@ -49,12 +50,11 @@ class ChatController:
             print("Either User Was null")
             return
         # elif not self.online_users[ws_message.to_id]  // TODO("Send FCM Push Notification")
-        await manager.get_websocket_for_user(
-            own_user_id
-        ).send_text(orjson.dumps(message))
-        print(f'Serialize Message is: {orjson.dumps(message)}')
-        await manager.get_websocket_for_user(message_request.to_user_id).send_text(
-            orjson.dumps(message)
+        print(f"Message is {message}")
+        await manager.get_websocket_for_user(own_user_id).send_json(asdict(message))
+        print(f"Serialize String Message is: {str(orjson.dumps(message))}")
+        await manager.get_websocket_for_user(message_request.to_user_id).send_json(
+            asdict(message)
         )
 
 
