@@ -56,8 +56,8 @@ class MessageRepository:
             select(MessageTable)
             .where(MessageTable.chat_id == chat_id)
             .order_by(MessageTable.created_at)
-            .offset(offset)
-            .limit(page_size)
+            # .offset(offset)
+            # .limit(page_size)    // Currentlty not implemented pagination at Frontend 
         )
 
         result_rows = await self.db_session.execute(query)

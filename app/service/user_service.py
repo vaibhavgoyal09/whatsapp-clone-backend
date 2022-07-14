@@ -20,13 +20,30 @@ class UserService:
             print(traceback.format_exc())
             return None
 
+    async def get_user_details(self, user_id: int) -> ResultWrapper[User]:
+        try:
+            user_obj = await self.user_repository.get_raw_user_by_id(user_id)
+            return User(
+                user_obj.id,
+                user_obj.firebase_uid,
+                user_obj.name,
+                user_obj.about,
+                user_obj.phone_number,
+                user_obj.profile_image_url,
+            )
+        except:
+            print(traceback.format_exc())
+            return Error(message="No user found")
+
     async def add_user(
         self, request: RegisterUser, user_firebase_uid: str
     ) -> ResultWrapper[RegisterUserResponse]:
         try:
             user = await self.get_user_by_phone_number(request.phone_number)
             if user and isinstance(user, User):
-                return Error(message=f'User with phone number {request.phone_number} already exists')
+                return Error(
+                    message=f"User with phone number {request.phone_number} already exists"
+                )
             user_id = await self.user_repository.add_user(
                 name=request.name,
                 firebase_uid=user_firebase_uid,
@@ -37,27 +54,35 @@ class UserService:
             return RegisterUserResponse(user_id)
         except Exception as e:
             print(traceback.format_exc())
-            return Error(message='Something Went Wrong')
+            return Error(message="Something Went Wrong")
 
-    async def get_user_by_phone_number(self, phone_number: str)-> ResultWrapper[User]:
+    async def get_user_by_phone_number(self, phone_number: str) -> ResultWrapper[User]:
         try:
-            result = await self.user_repository.get_user_by_phone_number(phone_number.replace(" ", ""))
+            result = await self.user_repository.get_user_by_phone_number(
+                phone_number.replace(" ", "")
+            )
             if result is None:
-                return Error(message='user not found')
+                return Error(message="user not found")
             else:
                 return result
         except Exception as e:
             print(traceback.format_exc())
-            return Error(message='Something Went Wrong')
+            return Error(message="Something Went Wrong")
 
-    async def search_users_by_phone_number(self, query_value: str) -> ResultWrapper[List[User]]:
+    async def search_users_by_phone_number(
+        self, query_value: str
+    ) -> ResultWrapper[List[User]]:
         try:
-            return await self.user_repository.search_users_by_phone_number(query_value.replace(" ", ""))
+            return await self.user_repository.search_users_by_phone_number(
+                query_value.replace(" ", "")
+            )
         except Exception as e:
             print(traceback.format_exc())
-            return Error(message='Something Went Wrong')
+            return Error(message="Something Went Wrong")
 
-    async def update_user_details(self, user_uid:str, request: UpdateUserRequest) -> ResultWrapper[None]:
+    async def update_user_details(
+        self, user_uid: str, request: UpdateUserRequest
+    ) -> ResultWrapper[None]:
         try:
             return await self.user_repository.update_user_details(user_uid, request)
         except:

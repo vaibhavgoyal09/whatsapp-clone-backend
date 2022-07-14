@@ -16,6 +16,15 @@ async def get_current_user(user: User = Depends(get_current_user)):
     return ORJSONResponse(user)
 
 
+@router.get('/details/{user_id}')
+async def get_user_details(user_id: int, service: UserService = Depends()):
+    result: ResultWrapper = await service.get_user_details(user_id)
+    if isinstance(result, Error):
+        raise HTTPException(status_code=result.code, detail=result.message)
+    else:
+        return ORJSONResponse(result)
+
+
 @router.post("/register")
 async def register_user(
     request: RegisterUser,
