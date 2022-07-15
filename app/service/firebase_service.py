@@ -40,9 +40,6 @@ async def get_current_user(
     service: UserService = Depends()
 ):
     user = await service.get_user_by_firebase_uid(firebase_uid)
-
-    print(f'userID: {user.id}')
-
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

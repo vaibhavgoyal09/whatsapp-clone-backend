@@ -70,12 +70,13 @@ class UserService:
             return Error(message="Something Went Wrong")
 
     async def search_users_by_phone_number(
-        self, query_value: str
+        self, user_self: User, query_value: str
     ) -> ResultWrapper[List[User]]:
         try:
-            return await self.user_repository.search_users_by_phone_number(
-                query_value.replace(" ", "")
+            result = await self.user_repository.search_users_by_phone_number(
+                user_self_id=user_self.id, query_value=query_value.replace(" ", "")
             )
+            return result
         except Exception as e:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")

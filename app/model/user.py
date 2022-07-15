@@ -1,9 +1,6 @@
 from dataclasses import dataclass
-import orjson
-from fastapi.responses import ORJSONResponse
 
-
-@dataclass
+@dataclass(eq=False)
 class User:
     id: int
     firebase_uid: str
@@ -12,7 +9,8 @@ class User:
     phone_number: str
     profile_image_url: str
 
-
-    @staticmethod
-    def toJson(user):
-        return orjson.dumps(user)
+    def __eq__(self, other):
+        try:
+            return self.id == other.id
+        except:
+            return False

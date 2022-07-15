@@ -33,9 +33,8 @@ class ChatService:
                 for user in users:
                     if user.id == user_self.id:
                         continue
-                    else:
-                        remote_user = user
-
+                    remote_user = user
+                        
                 chat = Chat(
                     id=chat_obj.id,
                     remote_user_id=remote_user.id,

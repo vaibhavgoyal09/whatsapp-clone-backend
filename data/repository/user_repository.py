@@ -6,7 +6,7 @@ from data.database import get_session
 from data.model.user import UserTable
 from fastapi import Depends
 from sqlalchemy.future import select
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, and_
 from app.model.request.update_user_request import UpdateUserRequest
 
 
@@ -88,10 +88,18 @@ class UserRepository:
             profile_image_url=user_table.profile_image_url,
         )
 
-    async def search_users_by_phone_number(self, query_value: str) -> List[User]:
+    async def search_users_by_phone_number(
+        self, user_self_id: int, query_value: str
+    ) -> List[User]:
+        print(user_self_id)
         query = (
             select(UserTable)
-            .where(UserTable.phone_number.like(f"%{query_value}%"))
+            .where(
+                and_(
+                    UserTable.phone_number.like(f"%{query_value}%"),
+                    UserTable.id != user_self_id,
+                )
+            )
             .order_by(asc(UserTable.phone_number))
         )
 

@@ -12,11 +12,11 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 
 @router.get("/current")
-async def get_current_user(user: User = Depends(get_current_user)):
+async def get_current_user_details(user: User = Depends(get_current_user)):
     return ORJSONResponse(user)
 
 
-@router.get('/details/{user_id}')
+@router.get("/details/{user_id}")
 async def get_user_details(user_id: int, service: UserService = Depends()):
     result: ResultWrapper = await service.get_user_details(user_id)
     if isinstance(result, Error):
@@ -50,18 +50,24 @@ async def check_if_user_exists(phone_number: str, service: UserService = Depends
 
 @router.get("/search")
 async def search_users_by_phone_number(
-    phone_number: str, service: UserService = Depends()
+    phone_number: str,
+    service: UserService = Depends(),
+    user: User = Depends(get_current_user),
 ):
-    print(f"Phone Number Query is {phone_number}")
-    result = await service.search_users_by_phone_number(phone_number)
+    print(user)
+    result = await service.search_users_by_phone_number(user_self=user, query_value=phone_number)
     if isinstance(result, Error):
         raise HTTPException(result.code, detail=result.message)
 
     return ORJSONResponse(result)
 
 
-@router.put('/update')
-async def update_user_details(request: UpdateUserRequest, user_uid: str = Depends(get_current_user_uid), service: UserService = Depends()):
+@router.put("/update")
+async def update_user_details(
+    request: UpdateUserRequest,
+    user_uid: str = Depends(get_current_user_uid),
+    service: UserService = Depends(),
+):
     result = await service.update_user_details(user_uid, request)
     if isinstance(result, Error):
         raise HTTPException(result.code, detail=result.message)
