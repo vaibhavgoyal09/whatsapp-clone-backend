@@ -1,51 +1,51 @@
 import traceback
 from typing import List
 
-from app.model.response.chat import Chat
 from app.model.user import User
 from app.utils.result_wrapper import *
-from data.repository.chat_repository import ChatRepository
+from data.repository.one_to_one_chat_repository import OneToOneChatRepository
 from data.repository.user_repository import UserRepository
+from data.repository.group_repository import GroupRepository
 from fastapi import Depends, HTTPException
+from app.model.chat import Chat
+from app.model.response.chats_groups_response import ChatGroupResponse, ChatGroupType
+from app.model.group import Group
 
 
 class ChatService:
     def __init__(
         self,
-        chat_repository: ChatRepository = Depends(),
+        one_to_one_chat_repository: OneToOneChatRepository = Depends(),
         user_repository: UserRepository = Depends(),
+        group_repository: GroupRepository = Depends()
     ):
-        self.chat_repository = chat_repository
+        self.one_to_one_chat_repository = one_to_one_chat_repository
         self.user_repository = user_repository
+        self.group_repository = group_repository
 
-    async def get_all_chats(self, user_self: User) -> ResultWrapper[List[Chat]]:
+    async def get_all_chats(self, user_self: User) -> ResultWrapper[List[ChatGroupResponse]]:
         try:
-            chats_objs = await self.chat_repository.get_all_chats_for_user(user_self)
+            chats_objs = await self.one_to_one_chat_repository.get_all_chats_for_user(user_self)
+            group_objs = await self.group_repository.get_groups_for_user(user_id=user_self.id)
 
-            chats: List[Chat] = []
+            chats: List[Chat] = list()
+            groups: List[Group] = list()
 
             for chat_obj in chats_objs:
-                users = await self.chat_repository.get_all_users_for_chat(chat_obj.id)
-
-                if len(users) > 2:
-                    raise Exception("Users can't be more than two.")
-
-                for user in users:
-                    if user.id == user_self.id:
-                        continue
-                    remote_user = user
-                        
+                remote_user = self.user_repository.get_raw_user_by_id(chat_obj.remote_user_id)
                 chat = Chat(
                     id=chat_obj.id,
                     remote_user_id=remote_user.id,
                     remote_user_name=remote_user.name,
                     remote_user_profile_image_url=remote_user.profile_image_url,
-                    last_message_id=chat_obj.last_message_id,
-                    unseen_message_count=chat_obj.unseen_message_count,
                 )
-
                 chats.append(chat)
-            return chats
+   
+            for group_obj in group_objs:
+                pass
+
+            # return chats
+            return list()
 
         except Exception as e:
             print(traceback.print_exc())
@@ -55,7 +55,7 @@ class ChatService:
         self, current_user: User, remote_user_id: int
     ) -> ResultWrapper[str]:
         try:
-            # doesChatExists = await self.chat_repository.get_chat_id_where_users(
+            # doesChatExists = await self.one_to_one_chat_repository.get_chat_id_where_users(
             #     user_ids=[current_user.id, remote_user_id]
             # )
             doesChatExists = False
@@ -68,7 +68,7 @@ class ChatService:
                 remote_user = await self.user_repository.get_raw_user_by_id(
                     remote_user_id
                 )
-                return await self.chat_repository.create_new_chat(
+                return await self.one_to_one_chat_repository.create_new_chat(
                     users=[current_user, remote_user]
                 )
         except Exception as e:
@@ -77,6 +77,8 @@ class ChatService:
 
     async def update_last_message(self, message_id: int, chat_id: int):
         try:
-            await self.chat_repository.update_last_message(last_message_id=message_id, chat_id=chat_id)
+            await self.one_to_one_chat_repository.update_last_message(
+                last_message_id=message_id, chat_id=chat_id
+            )
         except:
-            print(traceback.format_exc()) 
+            print(traceback.format_exc())

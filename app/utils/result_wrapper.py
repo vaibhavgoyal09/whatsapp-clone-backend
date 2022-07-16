@@ -8,7 +8,7 @@ T = TypeVar("T")
 @dataclass
 class Error:
     code: int = 400
-    message: str = ""
+    message: str = "Something Went Wrong"
 
 
 ResultWrapper = Union[T, Error]

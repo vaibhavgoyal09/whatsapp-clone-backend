@@ -6,6 +6,8 @@ from app.model.user import User
 from app.model.ws_message import WsMessageType
 from typing import Dict
 from app.model.add_message_request import AddMessageRequest
+import traceback
+
 
 router = APIRouter(prefix="/chat", tags=["chat_websocket"])
 
@@ -29,4 +31,5 @@ async def messaging_websocket_route(
                 print(message)
                 await controller.send_message(client_id, message)
     except WebSocketDisconnect:
+        print(traceback.format_exc())
         controller.disconnect(client_id)

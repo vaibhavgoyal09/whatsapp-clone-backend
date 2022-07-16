@@ -1,7 +1,6 @@
 from data.database import Base
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-from .relations.user_chat import user_chat
 from .relations.user_group import user_group
 
 
@@ -15,6 +14,10 @@ class UserTable(Base):
     profile_image_url = Column(String)
     phone_number = Column(String(20))
 
+    created_groups = relationship(
+        "GroupTable", back_populates="admin"
+    )
+
     statuses = relationship(
         "StatusTable", back_populates="user", cascade="all, delete-orphan"
     )
@@ -23,8 +26,8 @@ class UserTable(Base):
         "MessageTable", back_populates="sender"
     )
 
-    chats = relationship(
-        "ChatTable", secondary=user_chat, back_populates="users"
+    one_to_one_chats = relationship(
+        "OneToOneChatTable", back_populates="user"
     )
 
     groups = relationship(

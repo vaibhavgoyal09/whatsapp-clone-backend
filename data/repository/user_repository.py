@@ -5,13 +5,14 @@ from app.model.user import User
 from data.database import get_session
 from data.model.user import UserTable
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import asc, desc, and_
 from app.model.request.update_user_request import UpdateUserRequest
 
 
 class UserRepository:
-    def __init__(self, session=Depends(get_session)):
+    def __init__(self, session: AsyncSession = Depends(get_session)):
         self.db_session = session
 
     async def add_user(
