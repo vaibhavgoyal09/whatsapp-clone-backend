@@ -8,7 +8,7 @@ from data.repository.user_repository import UserRepository
 from data.repository.group_repository import GroupRepository
 from fastapi import Depends, HTTPException
 from app.model.chat import Chat
-from app.model.response.chats_groups_response import ChatGroupResponse, ChatGroupType
+from app.model.response.chat import Chat, ChatType
 from app.model.group import Group
 
 
@@ -23,13 +23,14 @@ class ChatService:
         self.user_repository = user_repository
         self.group_repository = group_repository
 
-    async def get_all_chats(self, user_self: User) -> ResultWrapper[List[ChatGroupResponse]]:
+    async def get_recent_chats(self, user_self: User) -> ResultWrapper[List[Chat]]:
         try:
             chats_objs = await self.one_to_one_chat_repository.get_all_chats_for_user(user_self)
             group_objs = await self.group_repository.get_groups_for_user(user_id=user_self.id)
 
-            chats: List[Chat] = list()
+            one_to_one_chats: List[Chat] = list()
             groups: List[Group] = list()
+            
 
             for chat_obj in chats_objs:
                 remote_user = self.user_repository.get_raw_user_by_id(chat_obj.remote_user_id)

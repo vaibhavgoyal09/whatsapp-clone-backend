@@ -12,7 +12,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def get_all_chats(
     user: User = Depends(get_current_user), service: ChatService = Depends()
 ):
-    result: ResultWrapper = await service.get_all_chats(user)
+    result: ResultWrapper = await service.get_recent_chats(user)
     if isinstance(result, Error):
         raise HTTPException(status_code=result.code, detail=result.message)
     else:

@@ -14,8 +14,8 @@ class OneToOneChatRepository:
     def __init__(self, session: AsyncSession = Depends(get_session)):
         self.db_session: AsyncSession = session
 
-    async def create_new_chat(self, users: List[UserTable]) -> str:
-        chat = OneToOneChatTable(last_message_id=None, users=users)
+    async def create_new_chat(self, user_self_id: int, remote_user_id: int) -> str:
+        chat = OneToOneChatTable(user_id=user_self_id, remote_user_id=remote_user_id)
         self.db_session.add(chat)
         await self.db_session.commit()
         await self.db_session.refresh(chat)
@@ -35,11 +35,10 @@ class OneToOneChatRepository:
     #     )
     #     result = await self.db_session.execute(query)
     #     return result.first().id
-        
+
     async def get_all_chats_for_user(self, user_self: User) -> List[OneToOneChatTable]:
-        query = (
-            select(OneToOneChatTable)
-            .where(OneToOneChatTable.user_id == user_self.id)
+        query = select(OneToOneChatTable).where(
+            OneToOneChatTable.user_id == user_self.id
         )
 
         results = await self.db_session.execute(query)

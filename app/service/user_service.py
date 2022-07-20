@@ -1,3 +1,4 @@
+from sqlalchemy import except_
 from data.repository.user_repository import UserRepository
 from app.model.user import User
 from app.model.request.register_user import RegisterUser
@@ -7,6 +8,7 @@ from app.utils.result_wrapper import *
 from app.model.response.register_user_response import RegisterUserResponse
 from typing import List
 from app.model.request.update_user_request import UpdateUserRequest
+from sqlalchemy.exc import NoResultFound
 
 
 class UserService:
@@ -40,7 +42,7 @@ class UserService:
     ) -> ResultWrapper[RegisterUserResponse]:
         try:
             user = await self.get_user_by_phone_number(request.phone_number)
-            if user and isinstance(user, User):
+            if user:
                 return Error(
                     message=f"User with phone number {request.phone_number} already exists"
                 )
@@ -56,15 +58,16 @@ class UserService:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
 
-    async def get_user_by_phone_number(self, phone_number: str) -> ResultWrapper[User]:
+    async def get_user_by_phone_number(self, phone_number: str) -> Union[User, None]:
         try:
-            result = await self.user_repository.get_user_by_phone_number(
-                phone_number.replace(" ", "")
-            )
-            if result is None:
-                return Error(message="user not found")
-            else:
-                return result
+            return await self.user_repository.get_user_by_phone_number(phone_number)
+        except:
+            return None
+
+    async def check_if_user_exists(self, phone_number: str) -> ResultWrapper[bool]:
+        try:
+            user = await self.get_user_by_phone_number(phone_number)
+            return user != None
         except Exception as e:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")

@@ -9,7 +9,7 @@ class OneToOneChatTable(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     remote_user_id = Column(Integer, nullable=False)
-    last_message_id = Column(Integer, nullable=True)
+    last_message_id = Column(Integer, nullable=True, default=None)
 
     user = orm.relationship(
         "UserTable", back_populates='one_to_one_chats'

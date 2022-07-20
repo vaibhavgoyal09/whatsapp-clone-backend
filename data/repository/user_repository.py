@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import asc, desc, and_
 from app.model.request.update_user_request import UpdateUserRequest
+from sqlalchemy.exc import NoResultFound
 
 
 class UserRepository:
@@ -71,12 +72,10 @@ class UserRepository:
         query = select(UserTable).where(
             UserTable.phone_number.like(f"%{phone_number}%")
         )
-
         users = await self.db_session.execute(query)
         user_table_obj = users.first()
-
         if user_table_obj is None:
-            raise Exception("User not found")
+            raise NoResultFound()
 
         user_table = user_table_obj.UserTable
 
