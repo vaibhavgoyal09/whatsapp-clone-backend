@@ -1,12 +1,18 @@
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from fastapi import Depends
 from app.core.config import Settings, get_settings
+from enum import Enum
 
 
 class Database:
     client: AsyncIOMotorClient = None
 
 db = Database()
+
+
+class CollectionNames(Enum):
+    USER_COLLECTION = "users"
+
 
 async def get_database(
     settings: Settings = Depends(get_settings),
@@ -16,6 +22,7 @@ async def get_database(
 
 def connect_to_mongo():
     print("Initializing Database...")
+    print(f"{str(get_settings().DATABASE_URI)}")
     db.client = AsyncIOMotorClient(
         str(get_settings().DATABASE_URI),
         maxPoolSize=get_settings().MAX_CONNECTIONS_COUNT,

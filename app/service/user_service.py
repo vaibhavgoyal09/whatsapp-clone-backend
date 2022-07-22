@@ -1,38 +1,33 @@
-from sqlalchemy import except_
-from data.repository.user_repository import UserRepository
-from app.model.user import User
-from app.model.request.register_user import RegisterUser
-from fastapi import Depends
 import traceback
-from app.utils.result_wrapper import *
-from app.model.response.register_user_response import RegisterUserResponse
-from typing import List
+from typing import List, Union
+
+from app.model.request.register_user import RegisterUser
 from app.model.request.update_user_request import UpdateUserRequest
-from sqlalchemy.exc import NoResultFound
+from app.model.response.register_user_response import RegisterUserResponse
+from app.model.user import User
+from app.utils.result_wrapper import *
+from data.repository.user_repository import UserRepository
+from fastapi import Depends
 
 
 class UserService:
     def __init__(self, repository: UserRepository = Depends()):
         self.user_repository = repository
 
-    async def get_user_by_firebase_uid(self, firebase_uid: int) -> User:
+    async def get_user_by_firebase_uid(self, firebase_uid: int) -> Union[User, None]:
         try:
             return await self.user_repository.get_user_by_firebase_uid(firebase_uid)
         except:
             print(traceback.format_exc())
             return None
 
-    async def get_user_details(self, user_id: int) -> ResultWrapper[User]:
+    async def get_user_details(self, user_id: str) -> ResultWrapper[User]:
         try:
-            user_obj = await self.user_repository.get_raw_user_by_id(user_id)
-            return User(
-                user_obj.id,
-                user_obj.firebase_uid,
-                user_obj.name,
-                user_obj.about,
-                user_obj.phone_number,
-                user_obj.profile_image_url,
-            )
+            user = await self.user_repository.get_user_by_id(user_id)
+            if not user:
+                raise Exception("No user found")
+            else:
+                return user
         except:
             print(traceback.format_exc())
             return Error(message="No user found")
@@ -47,11 +42,11 @@ class UserService:
                     message=f"User with phone number {request.phone_number} already exists"
                 )
             user_id = await self.user_repository.add_user(
+                about=request.about,
                 name=request.name,
                 firebase_uid=user_firebase_uid,
-                about=request.about,
                 profile_image_url=request.profile_image_url,
-                phone_number=request.phone_number.replace(" ", ""),
+                phone_number=request.phone_number,
             )
             return RegisterUserResponse(user_id)
         except Exception as e:

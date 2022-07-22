@@ -34,10 +34,8 @@ class Settings(BaseSettings):
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
-        # print(values.get(MONGO_INITDB_ROOT_USERNAME))
-        print(values.keys())
         return DatabaseURL(
-            f'mongodb://{values.get("MONGO_INITDB_ROOT_USERNAME")}:{values.get("MONGO_INITDB_ROOT_PASSWORD")}@{values.get("MONGO_HOST")}:{values.get("MONGO_PORT")}/{values.get("MONGO_DATABASE_NAME")}'
+            f'mongodb://{values.get("MONGO_INITDB_ROOT_USERNAME")}:{values.get("MONGO_INITDB_ROOT_PASSWORD")}@{values.get("MONGO_HOST")}:{values.get("MONGO_PORT")}/{values.get("MONGO_DATABASE_NAME")}?authSource=admin'
         )
 
     class Config:
