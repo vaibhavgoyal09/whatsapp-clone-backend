@@ -11,6 +11,7 @@ class ChatType(Enum):
 
 @dataclass
 class Chat:
+   chat_id: int
    type: int
    name: str
    profile_image_url: Union[str, None] = None

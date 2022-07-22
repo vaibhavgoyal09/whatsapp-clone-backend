@@ -1,18 +1,20 @@
 version: "3.8"
 
 services:
-  # app:
-  #   build: .
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - "8000:8000"
-
-
-  database:
-    image: postgres
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
     env_file:
       - .env
-    ports:
-      - "5432:5432"
 
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    env_file:
+      .env
+    depends_on:
+      - mongodb

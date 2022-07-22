@@ -1,25 +1,31 @@
-from app.core.config import get_settings
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from typing import AsyncIterator
-from sqlalchemy.exc import SQLAlchemyError
-import traceback
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from fastapi import Depends
+from app.core.config import Settings, get_settings
 
 
-DATABASE_URI = str(get_settings().DATABASE_URI)
+class Database:
+    client: AsyncIOMotorClient = None
 
-engine = create_async_engine(DATABASE_URI, echo=True, future=True)
-AsyncLocalSession = sessionmaker(
-    class_=AsyncSession, autocommit=False, autoflush=False, bind=engine
-)
+db = Database()
+
+async def get_database(
+    settings: Settings = Depends(get_settings),
+) -> AsyncIOMotorDatabase:
+    return db.client[settings.MONGO_DATABASE_NAME]
 
 
-Base = declarative_base()
+def connect_to_mongo():
+    print("Initializing Database...")
+    db.client = AsyncIOMotorClient(
+        str(get_settings().DATABASE_URI),
+        maxPoolSize=get_settings().MAX_CONNECTIONS_COUNT,
+        minPoolSize=get_settings().MIN_CONNECTIONS_COUNT,
+    )
+    print("Initialized Database.")
 
 
-# Dependency
-async def get_session() -> AsyncIterator[sessionmaker]:
-    async with AsyncLocalSession() as session:
-        yield session
+def close_mongo_connection():
+    print("Closing Database...")
+    if db.client:
+        db.client.close()
+    print("Database Closed")

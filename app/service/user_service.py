@@ -84,6 +84,18 @@ class UserService:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
 
+    async def search_users_by_name(
+        self, user_self: User, query_value: str
+    ) -> ResultWrapper[List[User]]:
+        try:
+            result = await self.user_repository.search_users_by_name(
+                user_self_id=user_self.id, query_value=query_value.replace(" ", "")
+            )
+            return result
+        except Exception as e:
+            print(traceback.format_exc())
+            return Error(message="Something Went Wrong")
+
     async def update_user_details(
         self, user_uid: str, request: UpdateUserRequest
     ) -> ResultWrapper[None]:

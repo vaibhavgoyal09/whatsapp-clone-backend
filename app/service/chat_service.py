@@ -6,6 +6,7 @@ from app.utils.result_wrapper import *
 from data.repository.one_to_one_chat_repository import OneToOneChatRepository
 from data.repository.user_repository import UserRepository
 from data.repository.group_repository import GroupRepository
+from data.repository.message_repository import MessageRepository
 from fastapi import Depends, HTTPException
 from app.model.chat import Chat
 from app.model.response.chat import Chat, ChatType
@@ -17,11 +18,13 @@ class ChatService:
         self,
         one_to_one_chat_repository: OneToOneChatRepository = Depends(),
         user_repository: UserRepository = Depends(),
-        group_repository: GroupRepository = Depends()
+        group_repository: GroupRepository = Depends(),
+        message_repository: MessageRepository = Depends()
     ):
         self.one_to_one_chat_repository = one_to_one_chat_repository
         self.user_repository = user_repository
         self.group_repository = group_repository
+        self.message_repository = message_repository
 
     async def get_recent_chats(self, user_self: User) -> ResultWrapper[List[Chat]]:
         try:
@@ -30,20 +33,31 @@ class ChatService:
 
             one_to_one_chats: List[Chat] = list()
             groups: List[Group] = list()
-            
 
             for chat_obj in chats_objs:
-                remote_user = self.user_repository.get_raw_user_by_id(chat_obj.remote_user_id)
+                remote_user: UserTable = self.user_repository.get_raw_user_by_id(chat_obj.remote_user_id)
+                if chat_obj.last_message_id:
+                    last_message = await self.message_repository.get_message_by_id(chat_obj.last_message_id)
+                else:
+                    last_message = None
                 chat = Chat(
-                    id=chat_obj.id,
-                    remote_user_id=remote_user.id,
-                    remote_user_name=remote_user.name,
-                    remote_user_profile_image_url=remote_user.profile_image_url,
+                    chat_id=chat_obj.id,
+                    type=ChatType.one_to_one.value,
+                    name=remote_user.name,
+                    profile_image_url=remote_user.profile_image_url,
+                    last_message=last_message
                 )
                 chats.append(chat)
    
             for group_obj in group_objs:
-                pass
+                
+                chat = Chat(
+                    chat_id=group_obj.id,
+                    type=ChatType.group.value,
+                    name=group_obj.name,
+                    profile_image_url=group_obj.profile_image_url,
+
+                )
 
             # return chats
             return list()
@@ -63,14 +77,8 @@ class ChatService:
             if doesChatExists:
                 raise Exception("Chat Already exists")
             else:
-                current_user = await self.user_repository.get_raw_user_by_id(
-                    current_user.id
-                )
-                remote_user = await self.user_repository.get_raw_user_by_id(
-                    remote_user_id
-                )
                 return await self.one_to_one_chat_repository.create_new_chat(
-                    users=[current_user, remote_user]
+                    user_self_id=current_user.id, remote_user_id=remote_user_id
                 )
         except Exception as e:
             print(traceback.format_exc())
