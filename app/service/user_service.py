@@ -4,7 +4,7 @@ from typing import List, Union
 from app.model.request.register_user import RegisterUser
 from app.model.request.update_user_request import UpdateUserRequest
 from app.model.response.register_user_response import RegisterUserResponse
-from app.model.user import User
+from domain.model.user import User
 from app.utils.result_wrapper import *
 from data.repository.user_repository import UserRepository
 from fastapi import Depends

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from app.api.ws.chat_controller import ChatController, get_chat_controller
 import orjson
 from app.service.firebase_service import get_current_user
-from app.model.user import User
+from domain.model.user import User
 from app.model.ws_message import WsMessageType
 from typing import Dict
 from app.model.add_message_request import AddMessageRequest

@@ -1,4 +1,4 @@
-from app.model.user import User
+from domain.model.user import User
 from app.service.chat_service import ChatService
 from app.service.firebase_service import get_current_user
 from app.utils.result_wrapper import *

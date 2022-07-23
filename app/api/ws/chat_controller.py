@@ -1,7 +1,7 @@
 from typing import Dict
 from fastapi import WebSocket, Depends
 from app.model.ws_message import WsMessage
-from app.model.message import Message
+from domain.model.message import Message
 from app.service.chat_service import ChatService
 from app.service.message_service import MessageService
 from app.model.add_message_request import AddMessageRequest

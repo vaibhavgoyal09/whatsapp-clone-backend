@@ -7,11 +7,13 @@ from enum import Enum
 class Database:
     client: AsyncIOMotorClient = None
 
+
 db = Database()
 
 
 class CollectionNames(Enum):
     USER_COLLECTION = "users"
+    CHAT_COLLECTION = "chats"
 
 
 async def get_database(
@@ -22,7 +24,6 @@ async def get_database(
 
 def connect_to_mongo():
     print("Initializing Database...")
-    print(f"{str(get_settings().DATABASE_URI)}")
     db.client = AsyncIOMotorClient(
         str(get_settings().DATABASE_URI),
         maxPoolSize=get_settings().MAX_CONNECTIONS_COUNT,

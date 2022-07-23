@@ -1,7 +1,7 @@
 import traceback
 from typing import List
 
-from app.model.message import Message
+from domain.model.message import Message
 from app.utils.result_wrapper import *
 from data.repository.message_repository import MessageRepository
 from fastapi import Depends, HTTPException

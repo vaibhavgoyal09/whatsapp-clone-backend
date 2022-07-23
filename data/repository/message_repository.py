@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 
-from app.model.message import Message, MessageType
+from domain.model.message import Message, MessageType
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession

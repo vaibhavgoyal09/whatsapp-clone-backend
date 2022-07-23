@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 from app.model.request.register_user import RegisterUser
 from app.model.request.update_user_request import UpdateUserRequest
-from app.model.user import User
+from domain.model.user import User
 from bson.objectid import ObjectId
 from data.database import CollectionNames, get_database
 from fastapi import Depends

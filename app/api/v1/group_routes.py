@@ -4,7 +4,7 @@ from app.service.firebase_service import get_current_user
 from app.model.request.create_group_request import CreateGroupRequest
 from app.service.group_service import GroupService
 from app.utils.result_wrapper import *
-from app.model.user import User
+from domain.model.user import User
 
 
 router = APIRouter(prefix="/group", tags=["group"])

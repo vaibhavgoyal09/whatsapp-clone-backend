@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Union
-from app.model.message import MessageType
+from domain.model.message import MessageType
 from app.model.add_message_request import AddMessageRequest
 from enum import Enum
 
