@@ -57,7 +57,7 @@ class UserRepository:
         self, user_self_id: int, query_value: str
     ) -> List[User]:
         cursor = self.user_collection.find(
-            {"phone_number": {"$regex": query_value.replace("+", "")}}
+                {"$and": [{"phone_number": {"$regex": query_value.replace("+", "")}}, { "_id": {"$ne": ObjectId(user_self_id)} }]}
         )
 
         users: List[User] = list()
@@ -71,7 +71,7 @@ class UserRepository:
         self, user_self_id: int, query_value: str
     ) -> List[User]:
         cursor = self.user_collection.find(
-            {"name": {"$regex": query_value.replace("+", "")}}
+                { "$and": [{"name": {"$regex": query_value.replace("+", "")}}, {"_id": {"$ne": ObjectId(user_self_id)}}]}
         )
 
         users: List[User] = list()

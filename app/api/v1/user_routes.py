@@ -17,7 +17,7 @@ async def get_current_user_details(user: User = Depends(get_current_user)):
 
 
 @router.get("/details/{user_id}")
-async def get_user_details(user_id: int, service: UserService = Depends()):
+async def get_user_details(user_id: str, service: UserService = Depends()):
     result: ResultWrapper = await service.get_user_details(user_id)
     if isinstance(result, Error):
         raise HTTPException(status_code=result.code, detail=result.message)
