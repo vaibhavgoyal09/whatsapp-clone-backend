@@ -14,6 +14,7 @@ db = Database()
 class CollectionNames(Enum):
     USER_COLLECTION = "users"
     CHAT_COLLECTION = "chats"
+    GROUP_COLLECTION = "groups"
 
 
 async def get_database(

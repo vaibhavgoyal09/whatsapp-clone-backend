@@ -21,7 +21,7 @@ async def get_all_chats(
 
 @router.post("/new")
 async def create_new_chat(
-    remote_user_id: int,
+    remote_user_id: str,
     service: ChatService = Depends(),
     current_user: User = Depends(get_current_user),
 ):

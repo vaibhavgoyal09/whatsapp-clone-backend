@@ -15,7 +15,7 @@ router = APIRouter(prefix="/chat", tags=["chat_websocket"])
 @router.websocket("/{client_id}")
 async def messaging_websocket_route(
     websocket: WebSocket,
-    client_id: int,
+    client_id: str,
     controller: ChatController = Depends(get_chat_controller)
     # current_user: User = Depends(get_current_user),
 ):

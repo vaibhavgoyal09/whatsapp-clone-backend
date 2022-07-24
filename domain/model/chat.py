@@ -13,5 +13,15 @@ class Chat:
     id: str
     user_ids: List[str]
     type: int = ChatType.one_to_one.value
-    unseen_message_count: int = 0
+    group_id: Union[str, None] = None
     last_message_id: Union[str, None] = None
+
+    @staticmethod
+    def from_db_model(db_model):
+        return Chat(
+            str(db_model.get("_id")),
+            group_id=db_model.get("group_id"),
+            user_ids=db_model.get("user_ids"),
+            type=db_model.get("type"),
+            last_message_id=db_model.get("last_message_id"),
+        )

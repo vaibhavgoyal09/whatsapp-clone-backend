@@ -1,12 +1,14 @@
 from typing import Optional, List
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
-from sqlalchemy.future import select
+from data.database import get_database, CollectionNames
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorCollection
+from bson.objectid import ObjectId
+from domain.model.group import Group
 
 
 class GroupRepository:
-    def __init__(self):
-        pass
+    def __init__(self, database: AsyncIOMotorDatabase = Depends(get_database)):
+        self.group_collection = database[CollectionNames.GROUP_COLLECTION.value]
     
     async def create_group(
         self,
@@ -33,6 +35,9 @@ class GroupRepository:
         #     await self.db_session.rollback()
         #     raise e
         pass
+
+    async def get_group_by_id(self, group_id: str) -> Group:
+        result = await self.group_collection.find_one({"_id": ObjectId(group_id)})
 
     async def get_groups_for_user(self, user_id: int):
         # query = (
