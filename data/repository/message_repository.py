@@ -17,7 +17,7 @@ class MessageRepository:
         message = {
             "type": request.type,
             "text": request.text,
-            "sender_id": request.to_user_id,
+            "sender_id": request.own_user_id,
             "chat_id": request.chat_id,
             "media_url": request.media_url,
             "created_at": int(datetime.timestamp(datetime.now()) * 1000),

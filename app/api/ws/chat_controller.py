@@ -18,7 +18,6 @@ class ChatController:
         chat_service: ChatService,
         message_service: MessageService,
     ):
-        print("Chat Controller Init Called.")
         self.chat_service: ChatService = chat_service
         self.message_service: MessageService = message_service
 
@@ -39,6 +38,8 @@ class ChatController:
             return
         else:
             message = add_message_result
+
+        print(orjson.dumps(message))
         await self.chat_service.update_last_message(
             message_id=message.id, chat_id=message.chat_id
         )
