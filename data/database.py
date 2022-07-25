@@ -14,6 +14,7 @@ db = Database()
 class CollectionNames(Enum):
     USER_COLLECTION = "users"
     CHAT_COLLECTION = "chats"
+    MESSAGE_COLLECTION = "messages"
     GROUP_COLLECTION = "groups"
 
 

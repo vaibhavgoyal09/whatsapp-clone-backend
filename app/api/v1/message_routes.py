@@ -8,7 +8,7 @@ router = APIRouter(prefix="/message", tags=["message"])
 
 @router.get("/{chat_id}")
 async def get_messages_for_chat(
-    chat_id: int,
+    chat_id: str,
     page: int = 0,
     page_size=20,
     message_service: MessageService = Depends(),
