@@ -1,4 +1,5 @@
 from typing import Dict
+from app.model.response.chat import Chat
 from fastapi import WebSocket, Depends
 from app.model.ws_message import WsMessage
 from domain.model.message import Message
@@ -39,20 +40,23 @@ class ChatController:
         else:
             message = add_message_result
 
-        print(orjson.dumps(message))
         await self.chat_service.update_last_message(
             message_id=message.id, chat_id=message.chat_id
         )
-        if not manager.get_websocket_for_user(
-            own_user_id
-        ) or not manager.get_websocket_for_user(message_request.to_user_id):
-            print("Either User Was null")
+
+        chat = await self.chat_service.get_chat_by_id(message.chat_id)
+
+        if isinstance(chat, Error):
             return
-        # elif not self.online_users[ws_message.to_id]  // TODO("Send FCM Push Notification")
-        await manager.get_websocket_for_user(own_user_id).send_json(asdict(message))
-        await manager.get_websocket_for_user(message_request.to_user_id).send_json(
-            asdict(message)
-        )
+
+        for user in chat.user_ids:
+            socket = manager.get_websocket_for_user(user)
+
+            if not socket:
+                # TODO("Send FCM Notification...")
+                continue
+
+            await socket.send_json(asdict(message))
 
 
 @lru_cache

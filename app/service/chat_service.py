@@ -98,8 +98,15 @@ class ChatService:
             print(traceback.format_exc())
             return Error()
 
-    async def update_last_message(self, message_id: int, chat_id: int):
+    async def get_chat_by_id(self, chat_id: str) -> ResultWrapper[Chat]:
         try:
-            pass
+            return await self.chat_repository.get_chat_by_id(chat_id)
+        except:
+            traceback.print_exc()
+            return Error()
+
+    async def update_last_message(self, message_id: str, chat_id: str):
+        try:
+            await self.chat_repository.update_last_message(chat_id, message_id)
         except:
             print(traceback.format_exc())
