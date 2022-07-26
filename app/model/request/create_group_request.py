@@ -5,5 +5,4 @@ from typing import Union, List
 class CreateGroupRequest:
    name: str
    user_ids: List[str]
-   description: Union[str, None] = None
    profile_image_url: Union[str, None] = None

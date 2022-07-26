@@ -71,7 +71,7 @@ class ChatService:
                         user = await self.user_repository.get_user_by_id(user_id)
                         users.append(user)
   
-                    chat = Chat(
+                    chat = ResponseChat(
                         chat_obj.id,
                         chat_obj.type,
                         group.name,

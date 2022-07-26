@@ -24,6 +24,18 @@ class ChatRepository:
 			result = await self.chat_collection.insert_one(chat)
 			return str(result.inserted_id)
 
+		async def create_new_group_chat(
+			self, group_id: str, user_ids: List[str]
+			) -> str:
+			chat = {
+				"user_ids": user_ids,
+				"group_id": group_id,
+				"type": ChatType.group.value,
+				"last_message_id": None,
+			}
+			result = await self.chat_collection.insert_one(chat)
+			return str(result.inserted_id)
+
 		async def get_all_chats_for_user(self, user_id: str) -> List[Chat]:
 			cursor = self.chat_collection.find({"user_ids": user_id})
 			chats: List[Chat] = list()
