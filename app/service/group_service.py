@@ -1,9 +1,12 @@
 from app.utils.result_wrapper import *
 from app.model.request.create_group_request import CreateGroupRequest
+from domain.model.group import Group
 from domain.model.user import User
+from app.model.response.group import Group as ResponseGroup
 from fastapi import Depends
 from data.repository.group_repository import GroupRepository
 from data.repository.chat_repository import ChatRepository
+from data.repository.user_repository import UserRepository
 from typing import List
 import traceback
 
@@ -12,10 +15,12 @@ class GroupService:
     def __init__(
         self,
         group_repository: GroupRepository = Depends(),
-        chat_repository: ChatRepository = Depends()
+        chat_repository: ChatRepository = Depends(),
+        user_repository: UserRepository = Depends(),
     ):
         self.group_repository = group_repository
         self.chat_repository = chat_repository
+        self.user_repository = user_repository
 
     async def create_group(
         self, request: CreateGroupRequest, user_self: User
@@ -31,8 +36,28 @@ class GroupService:
                 user_ids=user_ids,
                 profile_image_url=request.profile_image_url,
             )
-            chat_id = await self.chat_repository.create_new_group_chat(group_id, user_ids)
-            return chat_id
+            chat_id = await self.chat_repository.create_new_group_chat(
+                group_id, user_ids
+            )
+            return self.chat_repository.get_chat_by_id(chat_id)
+        except:
+            traceback.print_exc()
+            return Error()
+
+    async def get_group_details(self, group_id: str) -> ResultWrapper[ResponseGroup]:
+        try:
+            group = await self.group_repository.get_group_by_id(group_id)
+            if not group:
+                raise Exception(f"Group With ID:{group_id} Not Found")
+            users: List[User] = list()
+
+            for user_id in group.user_ids:
+                user = await self.user_repository.get_user_by_id(user_id)
+                users.append(user)
+
+            return ResponseGroup(
+                group.id, group.name, users, group.profile_image_url, group.admin_id
+            )
         except:
             traceback.print_exc()
             return Error()

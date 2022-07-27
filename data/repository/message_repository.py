@@ -9,6 +9,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import pymongo
 
+
 class MessageRepository:
     def __init__(self, database: AsyncIOMotorDatabase = Depends(get_database)):
         self.message_collection = database[CollectionNames.MESSAGE_COLLECTION.value]
@@ -30,8 +31,8 @@ class MessageRepository:
     ) -> List[Message]:
         cursor = (
             self.message_collection.find({"chat_id": chat_id})
-            .skip(page * page_size)
-            .limit(page_size)
+            # .skip(page * page_size)
+            # .limit(page_size)
             .sort("created_at", pymongo.DESCENDING)
         )
         messages: List[Message] = list()

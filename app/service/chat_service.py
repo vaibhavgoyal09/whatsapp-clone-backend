@@ -53,7 +53,7 @@ class ChatService:
                         chat_obj.id,
                         chat_obj.type,
                         remote_user.name,
-                        [user_self, remote_user],
+                        chat_obj.user_ids,
                         None,
                         remote_user.profile_image_url,
                         last_message
@@ -61,21 +61,16 @@ class ChatService:
                     chats.append(chat)
 
                 elif chat_obj.type == ChatType.group.value:
-                    users: List[User] = list()
                     group = await self.group_repository.get_group_by_id(chat_obj.group_id)
 
                     if not group:
                         continue
 
-                    for user_id in group.user_ids:
-                        user = await self.user_repository.get_user_by_id(user_id)
-                        users.append(user)
-  
                     chat = ResponseChat(
                         chat_obj.id,
                         chat_obj.type,
                         group.name,
-                        users,
+                        chat_obj.user_ids,
                         group.id,
                         group.profile_image_url,
                         last_message
@@ -91,9 +86,10 @@ class ChatService:
         self, current_user: User, remote_user_id: str
     ) -> ResultWrapper[str]:
         try:
-            return await self.chat_repository.create_new_one_to_one_chat(
+            chat_id = await self.chat_repository.create_new_one_to_one_chat(
                 current_user.id, remote_user_id
             )
+            return await self.get_chat_by_id(chat_id)
         except Exception as e:
             print(traceback.format_exc())
             return Error()
