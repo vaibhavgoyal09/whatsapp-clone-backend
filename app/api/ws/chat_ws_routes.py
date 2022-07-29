@@ -25,11 +25,10 @@ async def messaging_websocket_route(
         while True:
             received_text = await websocket.receive_text()
             payload: Dict = orjson.loads(received_text)
-            print(payload)
             if payload["type"] == WsMessageType.message.value:
                 message = AddMessageRequest.from_dict(payload["message"], client_id)
                 print(message)
                 await controller.send_message(client_id, message)
     except WebSocketDisconnect:
         print(traceback.format_exc())
-        controller.disconnect(client_id)
+        await controller.disconnect(client_id)

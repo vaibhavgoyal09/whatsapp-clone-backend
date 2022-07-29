@@ -31,8 +31,6 @@ class ChatService:
     ) -> ResultWrapper[List[ResponseChat]]:
         try:
             chat_objs = await self.chat_repository.get_all_chats_for_user(user_self.id)
-            print(chat_objs)
-
             chats: List[ResponseChat] = list()
 
             for chat_obj in chat_objs:

@@ -99,3 +99,9 @@ class UserService:
         except:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
+
+    async def update_user_online_status(self, user_id: str, status_type: int):
+        try:
+            await self.user_repository.update_user_online_status(user_id, status_type)
+        except:
+            traceback.print_exc()

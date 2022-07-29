@@ -9,6 +9,8 @@ from data.repository.chat_repository import ChatRepository
 from data.repository.user_repository import UserRepository
 from typing import List
 import traceback
+from app.model.response.chat import Chat
+from domain.model.chat import ChatType
 
 
 class GroupService:
@@ -24,7 +26,7 @@ class GroupService:
 
     async def create_group(
         self, request: CreateGroupRequest, user_self: User
-    ) -> ResultWrapper[int]:
+    ) -> ResultWrapper[Chat]:
         try:
             user_ids = request.user_ids
             if len(user_ids) < 1:
@@ -39,7 +41,17 @@ class GroupService:
             chat_id = await self.chat_repository.create_new_group_chat(
                 group_id, user_ids
             )
-            return self.chat_repository.get_chat_by_id(chat_id)
+            chat = await self.chat_repository.get_chat_by_id(chat_id)
+
+            return Chat(
+                id=chat.id,
+                name=request.name,
+                profile_image_url=request.profile_image_url,
+                type=ChatType.group.value,
+                group_id=group_id,
+                user_ids=user_ids,
+                last_message=None,
+            )
         except:
             traceback.print_exc()
             return Error()
@@ -53,6 +65,8 @@ class GroupService:
 
             for user_id in group.user_ids:
                 user = await self.user_repository.get_user_by_id(user_id)
+                if not user:
+                    continue
                 users.append(user)
 
             return ResponseGroup(

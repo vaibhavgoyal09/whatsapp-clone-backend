@@ -5,12 +5,14 @@ from app.model.ws_message import WsMessage
 from domain.model.message import Message
 from app.service.chat_service import ChatService
 from app.service.message_service import MessageService
+from app.service.user_service import UserService
 from app.model.add_message_request import AddMessageRequest
 from app.utils.result_wrapper import *
 import orjson
 from functools import lru_cache
 from app.api.ws.connection_manager import manager
 from dataclasses import asdict
+from domain.model.user import OnlineStatusType
 
 
 class ChatController:
@@ -18,18 +20,20 @@ class ChatController:
         self,
         chat_service: ChatService,
         message_service: MessageService,
+        user_service: UserService
     ):
         self.chat_service: ChatService = chat_service
         self.message_service: MessageService = message_service
+        self.user_service = user_service
 
     async def connect(self, user_id: str, websocket: WebSocket):
         await websocket.accept()
         manager.add_user(user_id, websocket)
-        print(manager.online_users)
+        await self.user_service.update_user_online_status(user_id, OnlineStatusType.online.value)
 
-    def disconnect(self, user_id: str):
+    async def disconnect(self, user_id: str):
         manager.remove_user(user_id)
-        print(manager.online_users)
+        await self.user_service.update_user_online_status(user_id, OnlineStatusType.offline.value)        
 
     async def send_message(self, own_user_id: str, message_request: AddMessageRequest):
         add_message_result: ResultWrapper = await self.message_service.add_message(
@@ -61,6 +65,6 @@ class ChatController:
 
 @lru_cache
 def get_chat_controller(
-    message_service: MessageService = Depends(), chat_service: ChatService = Depends()
+    message_service: MessageService = Depends(), chat_service: ChatService = Depends(), user_service: UserService = Depends()
 ):
-    return ChatController(message_service=message_service, chat_service=chat_service)
+    return ChatController(message_service=message_service, chat_service=chat_service, user_service=user_service)
