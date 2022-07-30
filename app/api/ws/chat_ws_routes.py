@@ -7,6 +7,7 @@ from app.model.ws_message import WsMessageType
 from typing import Dict
 from app.model.add_message_request import AddMessageRequest
 import traceback
+from app.model.typing_status import TypingStatus
 
 
 router = APIRouter(prefix="/chat", tags=["chat_websocket"])
@@ -17,7 +18,6 @@ async def messaging_websocket_route(
     websocket: WebSocket,
     client_id: str,
     controller: ChatController = Depends(get_chat_controller)
-    # current_user: User = Depends(get_current_user),
 ):
     await controller.connect(user_id=client_id, websocket=websocket)
     print(f"{client_id} connected successfully")
@@ -27,8 +27,10 @@ async def messaging_websocket_route(
             payload: Dict = orjson.loads(received_text)
             if payload["type"] == WsMessageType.message.value:
                 message = AddMessageRequest.from_dict(payload["message"], client_id)
-                print(message)
                 await controller.send_message(client_id, message)
+            elif payload["type"] == WsMessageType.typing_status.value:
+                status = TypingStatus.from_dict(payload["message"])
+                await controller.send_user_typing_status_change(client_id, status)
     except WebSocketDisconnect:
         print(traceback.format_exc())
         await controller.disconnect(client_id)

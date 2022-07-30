@@ -13,6 +13,8 @@ from functools import lru_cache
 from app.api.ws.connection_manager import manager
 from dataclasses import asdict
 from domain.model.user import OnlineStatusType
+from app.model.typing_status import TypingStatus
+from app.model.response.typing_status_change import TypingStatusChange
 
 
 class ChatController:
@@ -55,11 +57,23 @@ class ChatController:
 
         for user in chat.user_ids:
             socket = manager.get_websocket_for_user(user)
-
             if not socket:
-                # TODO("Send FCM Notification...")
                 continue
+            await socket.send_json(asdict(message))
 
+    async def send_user_typing_status_change(self, user_self_id: str, status: TypingStatus):
+        chat = await self.chat_service.get_chat_by_id(status.chat_id)
+
+        if isinstance(chat, Error):
+            return
+
+        for user_id in chat.user_ids:
+            if user_id == user_self_id:
+                continue
+            socket = manager.get_websocket_for_user(user_id)
+            if not socket:
+                continue
+            message = TypingStatusChange(user_self_id, chat.id, status.is_typing)
             await socket.send_json(asdict(message))
 
 
