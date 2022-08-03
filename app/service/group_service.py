@@ -75,3 +75,19 @@ class GroupService:
         except:
             traceback.print_exc()
             return Error()
+
+    async def add_participants(self, group_id: str, user_ids: List[str]) -> ResultWrapper[None]:
+        try:
+            await self.group_repository.add_participants(group_id, user_ids)
+            await self.chat_repository.add_participants(group_id, user_ids)
+        except:
+            traceback.print_exc()
+            return Error()
+
+    async def remove_participants(self, group_id: str, user_ids: List[str]) -> ResultWrapper[None]:
+        try:
+            await self.group_repository.remove_participants(group_id, user_ids)
+            await self.chat_repository.remove_participants(group_id, user_ids)
+        except:
+            traceback.print_exc()
+            return Error()

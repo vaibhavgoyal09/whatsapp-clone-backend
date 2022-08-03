@@ -15,6 +15,8 @@ from dataclasses import asdict
 from domain.model.user import OnlineStatusType
 from app.model.typing_status import TypingStatus
 from app.model.response.typing_status_change import TypingStatusChange
+from app.model.response.ws_client_message import WsClientMessage
+from app.model.ws_message import WsMessageType
 
 
 class ChatController:
@@ -55,17 +57,21 @@ class ChatController:
         if isinstance(chat, Error):
             return
 
+        client_message = WsClientMessage(type=WsMessageType.message.value, message=message)
+
         for user in chat.user_ids:
             socket = manager.get_websocket_for_user(user)
             if not socket:
                 continue
-            await socket.send_json(asdict(message))
+            await socket.send_json(asdict(client_message))
 
     async def send_user_typing_status_change(self, user_self_id: str, status: TypingStatus):
         chat = await self.chat_service.get_chat_by_id(status.chat_id)
-
+        print(status.is_typing)
         if isinstance(chat, Error):
             return
+        message = TypingStatusChange(user_self_id, chat.id, status.is_typing)
+        client_message = WsClientMessage(type=WsMessageType.typing_status.value, message=message)
 
         for user_id in chat.user_ids:
             if user_id == user_self_id:
@@ -73,8 +79,7 @@ class ChatController:
             socket = manager.get_websocket_for_user(user_id)
             if not socket:
                 continue
-            message = TypingStatusChange(user_self_id, chat.id, status.is_typing)
-            await socket.send_json(asdict(message))
+            await socket.send_json(asdict(client_message))
 
 
 @lru_cache

@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 from fastapi import Depends
 from data.database import get_database, CollectionNames
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -9,7 +9,7 @@ from domain.model.group import Group
 class GroupRepository:
     def __init__(self, database: AsyncIOMotorDatabase = Depends(get_database)):
         self.group_collection = database[CollectionNames.GROUP_COLLECTION.value]
-    
+
     async def create_group(
         self,
         user_self_id: str,
@@ -23,12 +23,12 @@ class GroupRepository:
             "name": name,
             "user_ids": user_ids,
             "admin_id": user_self_id,
-            "profile_image_url": profile_image_url
+            "profile_image_url": profile_image_url,
         }
         result = await self.group_collection.insert_one(group)
         return str(result.inserted_id)
 
-    async def get_group_by_id(self, group_id: str) -> Group:
+    async def get_group_by_id(self, group_id: str) -> Union[Group, None]:
         result = await self.group_collection.find_one({"_id": ObjectId(group_id)})
         if not result:
             return None
@@ -42,3 +42,13 @@ class GroupRepository:
             groups.append(Group.from_db_model(document))
 
         return groups
+
+    async def add_participants(self, group_id: str, user_ids: List[str]):
+        await self.group_collection.update_one(
+            {"_id": ObjectId(group_id)}, {"$push": {"user_ids": {"$each": user_ids}}}
+        )
+
+    async def remove_participants(self, group_id: str, user_ids: List[str]):
+        await self.group_collection.update_one(
+            {"_id": ObjectId(group_id)}, {"$pullAll": {"user_ids": user_ids}}
+        )
