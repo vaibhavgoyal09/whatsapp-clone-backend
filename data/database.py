@@ -16,6 +16,7 @@ class CollectionNames(Enum):
     CHAT_COLLECTION = "chats"
     MESSAGE_COLLECTION = "messages"
     GROUP_COLLECTION = "groups"
+    STATUS_COLLECTION = "statuses"
 
 
 async def get_database(

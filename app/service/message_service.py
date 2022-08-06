@@ -13,7 +13,7 @@ class MessageService:
         self.message_repository = message_repository
 
     async def get_messages_for_chat(
-        self, chat_id: int, page: int, page_size: int
+        self, chat_id: str, page: int, page_size: int
     ) -> ResultWrapper[List[Message]]:
         try:
             messages = await self.message_repository.get_messages_for_chat(
@@ -28,7 +28,10 @@ class MessageService:
     async def add_message(self, request: AddMessageRequest) -> ResultWrapper[Message]:
         try:
             message_id = await self.message_repository.add_message(request)
-            return await self.message_repository.get_message_by_id(message_id)
-        except Exception as e:
+            message = await self.message_repository.get_message_by_id(message_id)
+            if not message:
+                raise Exception("Unexpected Error Occurred")
+            return message
+        except Exception:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")

@@ -89,7 +89,7 @@ class UserRepository:
             updated_user["name"] = request.name
         if request.about:
             updated_user["about"] = request.about
-        if request.profile_image_url or request.should_remove_profile_photo:
+        if request.profile_image_url or request.should_remove_profile_image:
             updated_user["profile_image_url"] = request.profile_image_url
 
         await self.user_collection.update_one(

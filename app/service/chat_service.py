@@ -19,7 +19,7 @@ class ChatService:
         user_repository: UserRepository = Depends(),
         message_repository: MessageRepository = Depends(),
         chat_repository: ChatRepository = Depends(),
-        group_repository: GroupRepository = Depends()
+        group_repository: GroupRepository = Depends(),
     ):
         self.user_repository = user_repository
         self.message_repository = message_repository
@@ -36,7 +36,9 @@ class ChatService:
             for chat_obj in chat_objs:
 
                 if chat_obj.last_message_id:
-                    last_message = await self.message_repository.get_message_by_id(chat_obj.last_message_id)
+                    last_message = await self.message_repository.get_message_by_id(
+                        chat_obj.last_message_id
+                    )
                 else:
                     last_message = None
 
@@ -45,8 +47,10 @@ class ChatService:
                         id for id in chat_obj.user_ids if id != user_self.id
                     ][0]
 
-                    remote_user = await self.user_repository.get_user_by_id(remote_user_id)
-                
+                    remote_user = await self.user_repository.get_user_by_id(
+                        remote_user_id
+                    )
+
                     chat = ResponseChat(
                         chat_obj.id,
                         chat_obj.type,
@@ -54,12 +58,18 @@ class ChatService:
                         chat_obj.user_ids,
                         None,
                         remote_user.profile_image_url,
-                        last_message
+                        last_message,
                     )
                     chats.append(chat)
 
                 elif chat_obj.type == ChatType.group.value:
-                    group = await self.group_repository.get_group_by_id(chat_obj.group_id)
+
+                    if not chat_obj.group_id:
+                        continue
+
+                    group = await self.group_repository.get_group_by_id(
+                        chat_obj.group_id
+                    )
 
                     if not group:
                         continue
@@ -71,24 +81,26 @@ class ChatService:
                         chat_obj.user_ids,
                         group.id,
                         group.profile_image_url,
-                        last_message
+                        last_message,
                     )
                     chats.append(chat)
+                else:
+                    return []
             return chats
 
-        except Exception as e:
+        except Exception:
             print(traceback.print_exc())
             return Error()
 
     async def create_new_chat(
         self, current_user: User, remote_user_id: str
-    ) -> ResultWrapper[str]:
+    ) -> ResultWrapper[Chat]:
         try:
             chat_id = await self.chat_repository.create_new_one_to_one_chat(
                 current_user.id, remote_user_id
             )
             return await self.get_chat_by_id(chat_id)
-        except Exception as e:
+        except Exception:
             print(traceback.format_exc())
             return Error()
 
