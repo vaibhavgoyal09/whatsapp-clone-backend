@@ -68,9 +68,7 @@ async def search_contacts_by_name(
     service: UserService = Depends(),
     user: User = Depends(get_current_user),
 ):
-    result = await service.search_users_by_name(
-        user_self=user, query_value=name
-    )
+    result = await service.search_users_by_name(user_self=user, query_value=name)
     if isinstance(result, Error):
         raise HTTPException(result.code, detail=result.message)
 
@@ -86,3 +84,14 @@ async def update_user_details(
     result = await service.update_user_details(user_uid, request)
     if isinstance(result, Error):
         raise HTTPException(result.code, detail=result.message)
+
+
+@router.get("/with_active_status")
+async def get_all_users_with_active_status(
+    user: User = Depends(get_current_user), service: UserService = Depends()
+):
+    result = await service.get_all_users_with_active_status()
+    if isinstance(result, Error):
+        raise HTTPException(status_code=result.code, detail=result.message)
+
+    return ORJSONResponse(result)

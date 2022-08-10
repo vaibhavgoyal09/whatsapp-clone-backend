@@ -1,7 +1,5 @@
-import traceback
-from typing import List, Optional, Union
+from typing import List, Union
 
-from app.model.request.register_user import RegisterUser
 from app.model.request.update_user_request import UpdateUserRequest
 from domain.model.user import User, OnlineStatusType
 from bson.objectid import ObjectId
@@ -32,7 +30,7 @@ class UserRepository:
             "about": about,
             "phone_number": phone_number,
             "online_status": OnlineStatusType.online.value,
-            "last_online_at": int(datetime.timestamp(datetime.now()) * 1000)
+            "last_online_at": int(datetime.timestamp(datetime.now()) * 1000),
         }
 
         result = await self.user_collection.insert_one(user)
@@ -57,10 +55,16 @@ class UserRepository:
             return None
 
     async def search_users_by_phone_number(
-        self, user_self_id: int, query_value: str
+        self, user_self_id: str, query_value: str
     ) -> List[User]:
-        cursor = self.user_collection.find(
-                {"$and": [{"phone_number": {"$regex": query_value.replace("+", "")}}, { "_id": {"$ne": ObjectId(user_self_id)} }]}
+        cursor = (self.user_collection.find(
+            {
+                "$and": [
+                    {"phone_number": {"$regex": query_value.replace("+", "")}},
+                    {"_id": {"$ne": ObjectId(user_self_id)}},
+                ]
+            }
+        )
         )
 
         users: List[User] = list()
@@ -70,10 +74,15 @@ class UserRepository:
         return users
 
     async def search_users_by_name(
-        self, user_self_id: int, query_value: str
+        self, user_self_id: str, query_value: str
     ) -> List[User]:
         cursor = self.user_collection.find(
-                { "$and": [{"name": {"$regex": query_value.replace("+", "")}}, {"_id": {"$ne": ObjectId(user_self_id)}}]}
+            {
+                "$and": [
+                    {"name": {"$regex": query_value.replace("+", "")}},
+                    {"_id": {"$ne": ObjectId(user_self_id)}},
+                ]
+            }
         )
 
         users: List[User] = list()

@@ -7,14 +7,20 @@ from app.model.response.register_user_response import RegisterUserResponse
 from domain.model.user import User
 from app.utils.result_wrapper import *
 from data.repository.user_repository import UserRepository
+from data.repository.status_repository import StatusRepository
 from fastapi import Depends
 
 
 class UserService:
-    def __init__(self, repository: UserRepository = Depends()):
+    def __init__(
+        self,
+        repository: UserRepository = Depends(),
+        status_repository: StatusRepository = Depends(),
+    ):
         self.user_repository = repository
+        self.status_repository = status_repository
 
-    async def get_user_by_firebase_uid(self, firebase_uid: int) -> Union[User, None]:
+    async def get_user_by_firebase_uid(self, firebase_uid: str) -> Union[User, None]:
         try:
             return await self.user_repository.get_user_by_firebase_uid(firebase_uid)
         except:
@@ -49,7 +55,7 @@ class UserService:
                 phone_number=request.phone_number,
             )
             return RegisterUserResponse(user_id)
-        except Exception as e:
+        except Exception:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
 
@@ -63,7 +69,7 @@ class UserService:
         try:
             user = await self.get_user_by_phone_number(phone_number)
             return user != None
-        except Exception as e:
+        except Exception:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
 
@@ -75,7 +81,7 @@ class UserService:
                 user_self_id=user_self.id, query_value=query_value.replace(" ", "")
             )
             return result
-        except Exception as e:
+        except Exception:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
 
@@ -87,7 +93,7 @@ class UserService:
                 user_self_id=user_self.id, query_value=query_value.replace(" ", "")
             )
             return result
-        except Exception as e:
+        except Exception:
             print(traceback.format_exc())
             return Error(message="Something Went Wrong")
 
@@ -105,3 +111,17 @@ class UserService:
             await self.user_repository.update_user_online_status(user_id, status_type)
         except:
             traceback.print_exc()
+
+    async def get_all_users_with_active_status(self) -> ResultWrapper[List[User]]:
+        user_ids = await self.status_repository.get_all_user_ids_with_active_status()
+        users: List[User] = list()
+
+        for user_id in user_ids:
+            user = await self.user_repository.get_user_by_id(user_id)
+
+            if not user:
+                continue
+            users.append(user)
+
+        users.reverse()
+        return users

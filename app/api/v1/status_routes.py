@@ -21,3 +21,16 @@ async def create_new_status(
         raise HTTPException(status_code=result.code, detail=result.message)
     else:
         return ORJSONResponse(result)
+
+
+@router.get("/all/{user_id}")
+async def get_all_statuses_of_user(
+    user_id: str,
+    user: User = Depends(get_current_user),
+    service: StatusService = Depends(),
+):
+    result: ResultWrapper = await service.get_all_statuses_of_user(user_id)
+    if isinstance(result, Error):
+        raise HTTPException(status_code=result.code, detail=result.message)
+    else:
+        return ORJSONResponse(result)
