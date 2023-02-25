@@ -1,3 +1,6 @@
 from typing import List
+# from PIL import Image
 
-ACCEPTABLE_FILE_FORMAT_EXTENSIONS: List[str] = ['.png', '.jpg', '.jpeg', '.mp4', '.mkv']
+def compress_image(file):
+   
+   pass

@@ -57,14 +57,13 @@ class UserRepository:
     async def search_users_by_phone_number(
         self, user_self_id: str, query_value: str
     ) -> List[User]:
-        cursor = (self.user_collection.find(
+        cursor = self.user_collection.find(
             {
                 "$and": [
                     {"phone_number": {"$regex": query_value.replace("+", "")}},
                     {"_id": {"$ne": ObjectId(user_self_id)}},
                 ]
             }
-        )
         )
 
         users: List[User] = list()

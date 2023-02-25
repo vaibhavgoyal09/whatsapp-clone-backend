@@ -10,7 +10,7 @@ from data.database import connect_to_mongo, close_mongo_connection
 
 
 def get_application():
-    _app = FastAPI(title=get_settings().PROJECT_NAME, debug=True)
+    _app = FastAPI(title=get_settings().PROJECT_NAME, debug=False)
 
     _app.add_event_handler("startup", connect_to_mongo)
     _app.add_event_handler("shutdown", close_mongo_connection)

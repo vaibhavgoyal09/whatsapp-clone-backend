@@ -26,17 +26,13 @@ async def get_database(
 
 
 def connect_to_mongo():
-    print("Initializing Database...")
     db.client = AsyncIOMotorClient(
         str(get_settings().DATABASE_URI),
         maxPoolSize=get_settings().MAX_CONNECTIONS_COUNT,
         minPoolSize=get_settings().MIN_CONNECTIONS_COUNT,
     )
-    print("Initialized Database.")
 
 
 def close_mongo_connection():
-    print("Closing Database...")
     if db.client:
         db.client.close()
-    print("Database Closed")

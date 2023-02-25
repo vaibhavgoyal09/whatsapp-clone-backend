@@ -52,7 +52,7 @@ class UserService:
                 name=request.name,
                 firebase_uid=user_firebase_uid,
                 profile_image_url=request.profile_image_url,
-                phone_number=request.phone_number,
+                phone_number=request.phone_number.replace(" ", ""),
             )
             return RegisterUserResponse(user_id)
         except Exception:
@@ -122,6 +122,7 @@ class UserService:
             if not user:
                 continue
             users.append(user)
+        temp_users = []
+        [temp_users.append(x) for x in users if x not in temp_users]
 
-        users.reverse()
-        return users
+        return temp_users
