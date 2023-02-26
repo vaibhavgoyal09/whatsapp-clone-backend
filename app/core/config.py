@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     MONGO_DATABASE_NAME: str = os.getenv("MONGO_DATABASE_NAME", "whatsapp")
     MONGO_HOST: str = os.getenv("MONGO_HOST", "localhost")
     MONGO_PORT: int = int(os.getenv("MONGO_PORT", 27017))
-    DATABASE_URI: Optional[DatabaseURL] = None
+    DATABASE_URI: Optional[DatabaseURL] = os.getenv("DATABASE_URI", None)
 
     @validator("DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
