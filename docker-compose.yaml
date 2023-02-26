@@ -1,6 +1,17 @@
 version: "3.8"
 
 services:
+
+  core_api:
+    build: .
+    container_name: "core-api-container"
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app:/app
+      - ./data:/data
+      - ./domain:/domain
+
   mongodb:
     image: mongo
     restart: always
@@ -9,12 +20,12 @@ services:
     env_file:
       - .env
 
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    env_file:
-      .env
-    depends_on:
-      - mongodb
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 8081:8081
+  #   env_file:
+  #     .env
+  #   depends_on:
+  #     - mongodb
