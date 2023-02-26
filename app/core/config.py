@@ -7,15 +7,6 @@ import os
 
 class Settings(BaseSettings):
     PROJECT_NAME: str
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
-
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
 
     MAX_CONNECTIONS_COUNT = int(os.getenv("MAX_CONNECTIONS_COUNT", 10))
     MIN_CONNECTIONS_COUNT = int(os.getenv("MIN_CONNECTIONS_COUNT", 10))
@@ -28,7 +19,7 @@ class Settings(BaseSettings):
     MONGO_DATABASE_NAME: str = os.getenv("MONGO_DATABASE_NAME", "whatsapp")
     MONGO_HOST: str = os.getenv("MONGO_HOST", "localhost")
     MONGO_PORT: int = int(os.getenv("MONGO_PORT", 27017))
-    DATABASE_URI: Optional[DatabaseURL] = os.getenv("DATABASE_URI", None)
+    DATABASE_URI = os.getenv("DATABASE_URI", "")
 
     @validator("DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
