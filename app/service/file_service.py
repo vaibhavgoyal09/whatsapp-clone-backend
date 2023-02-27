@@ -17,4 +17,4 @@ class FileService:
         async with aiofiles.open(f"{file_path}", mode="wb+") as f:
             await f.write(content)
 
-        return FileUploadResponse(f"http://127.0.0.1:8000/static/{filename}")
+        return FileUploadResponse(f"https://whatsapp-clone-backend-mmu8.onrender.com/static/{filename}")
