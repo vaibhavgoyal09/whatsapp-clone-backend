@@ -1,21 +1,13 @@
-from typing import Any, Dict, List, Optional, Union
-from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
+from typing import Any, Dict, List, Optional
+from pydantic import AnyHttpUrl, BaseSettings, validator
 from functools import lru_cache
 from databases import DatabaseURL
 import os
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str
+    PROJECT_NAME: str = os.getenv("PROJECT_NAME", "whatsapp-clone-backend")
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
-
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
 
     MAX_CONNECTIONS_COUNT = int(os.getenv("MAX_CONNECTIONS_COUNT", 10))
     MIN_CONNECTIONS_COUNT = int(os.getenv("MIN_CONNECTIONS_COUNT", 10))

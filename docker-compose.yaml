@@ -9,8 +9,6 @@ services:
       - 8000:8000
     volumes:
       - ./app:/app
-      - ./data:/data
-      - ./domain:/domain
 
   mongodb:
     image: mongo

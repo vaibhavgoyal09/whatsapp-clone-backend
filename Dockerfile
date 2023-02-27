@@ -4,16 +4,13 @@ ENV PYTHONPATH "${PYTHONPATH}:/"
 ENV PORT=8000
 
 # Install Poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
-    cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry && \
-    poetry config virtualenvs.create false
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - 
 
 # Copy using poetry.lock* in case it doesn't exist yet
-COPY ./pyproject.toml ./poetry.lock* /app/
+COPY ["app/", "data/", "domain/", "poetry.lock", "pyproject.toml", "firebase-adminsdk.json", ".env"] /app/
 
-RUN poetry install --no-root --no-dev
+WORKDIR /app
 
-COPY ./app /app /data/ /domain/
+RUN poetry install
 
-CMD ["uvicorn" "app.main:app" "--host" "0.0.0.0" "--port"]
+CMD ["uvicorn" "app.main:app" "--host" "0.0.0.0" "--port", "8000"]
