@@ -10,14 +10,18 @@ from data.database import connect_to_mongo, close_mongo_connection
 
 
 def get_application():
-    _app = FastAPI(title=get_settings().PROJECT_NAME, debug=False)
+    _app = FastAPI(title=get_settings().PROJECT_NAME, debug=get_settings().IS_DEBUG_MODE)
+
+    if not get_settings().IS_DEBUG_MODE:
+        _app.docs_url = None
+        _app.redoc_url = None
 
     _app.add_event_handler("startup", connect_to_mongo)
     _app.add_event_handler("shutdown", close_mongo_connection)
     
     _app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in get_settings().BACKEND_CORS_ORIGINS],
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
