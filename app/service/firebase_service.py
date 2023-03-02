@@ -3,9 +3,12 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth, credentials, initialize_app
 from app.service.user_service import UserService
 import traceback
+import json
 
+with open('firebase-adminsdk.json') as js:
+    certificate = json.load(js, strict=False)
 
-credential = credentials.Certificate('firebase-adminsdk.json')
+credential = credentials.Certificate(certificate)
 initialize_app(credential)
 
 
