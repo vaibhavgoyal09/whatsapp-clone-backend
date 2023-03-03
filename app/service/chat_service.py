@@ -94,12 +94,22 @@ class ChatService:
 
     async def create_new_chat(
         self, current_user: User, remote_user_id: str
-    ) -> ResultWrapper[Chat]:
+    ) -> ResultWrapper[ResponseChat]:
         try:
             chat_id = await self.chat_repository.create_new_one_to_one_chat(
                 current_user.id, remote_user_id
             )
-            return await self.get_chat_by_id(chat_id)
+            chat = await self.get_chat_by_id(chat_id)
+            remote_user = await self.user_repository.get_user_by_id(remote_user_id)
+            return ResponseChat(
+                chat_id,
+                ChatType.one_to_one,
+                remote_user.name,
+                chat.user_ids,
+                chat.group_id,
+                remote_user.profile_image_url,
+                None,
+            )
         except Exception:
             print(traceback.format_exc())
             return Error()
