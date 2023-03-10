@@ -27,6 +27,13 @@ class UserService:
             print(traceback.format_exc())
             return None
 
+    async def get_user_by_id(self, id: str) -> Union[User, None]:
+        try:
+            return await self.user_repository.get_user_by_id(id)
+        except:
+            print(traceback.format_exc())
+            return None
+
     async def get_user_details(self, user_id: str) -> ResultWrapper[User]:
         try:
             user = await self.user_repository.get_user_by_id(user_id)

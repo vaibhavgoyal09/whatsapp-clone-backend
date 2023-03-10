@@ -1,7 +1,6 @@
 import dataclasses
 from enum import Enum
 from typing import Union
-from datetime import datetime
 
 
 class MessageType(Enum):
@@ -13,7 +12,7 @@ class MessageType(Enum):
 
 @dataclasses.dataclass
 class Message:
-    id: int
+    id: str
     type: int
     text: str
     sender_id: str
