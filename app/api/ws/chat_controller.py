@@ -75,7 +75,6 @@ class ChatController:
         self, user_self_id: str, status: TypingStatus
     ):
         chat = await self.chat_service.get_chat_by_id(status.chat_id)
-        print(status.is_typing)
         if isinstance(chat, Error):
             return
         message = TypingStatusChange(user_self_id, chat.id, status.is_typing)
@@ -107,13 +106,19 @@ class ChatController:
     async def send_incoming_call_response(self, response: IncomingCallResponse):
         socket = manager.get_websocket_for_user(response.to_user_id)
 
+        print(socket)
+
         if not socket:
+            print("socket was none")
             return
 
         client_message = WsClientMessage(
             WsMessageType.incoming_call_response.value,
             IncomingCallResponseClient(response.by_user_id, response.response),
         )
+
+        await socket.send_json(asdict(client_message))
+        print("Message Sent")
 
 
 @lru_cache

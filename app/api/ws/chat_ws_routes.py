@@ -23,6 +23,7 @@ async def messaging_websocket_route(
         while True:
             received_text = await websocket.receive_text()
             payload: Dict = orjson.loads(received_text)
+            print(payload)
             if payload["type"] == WsMessageType.message.value:
                 message = AddMessageRequest.from_dict(payload["message"], client_id)
                 await controller.send_message(client_id, message)
@@ -32,7 +33,7 @@ async def messaging_websocket_route(
             elif payload["type"] == WsMessageType.incoming_call.value:
                 request = IncomingCall.from_dict(payload["message"])
                 await controller.send_incoming_call(request)
-            elif payload["type"] == WsMessageType.incoming_call_response:
+            elif payload["type"] == WsMessageType.incoming_call_response.value:
                 response = IncomingCallResponse.from_dict(payload["message"])
                 await controller.send_incoming_call_response(response)
 
