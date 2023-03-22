@@ -11,6 +11,7 @@ class WsMessageType(Enum):
    typing_status = 1
    incoming_call = 2
    incoming_call_response = 3
+   calling_event = 4
 
 
 @dataclass

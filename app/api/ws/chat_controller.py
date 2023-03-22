@@ -1,5 +1,7 @@
 from fastapi import WebSocket, Depends
+from app.model.calling_event_server import CallingEventServer
 from app.model.incoming_call import IncomingCall
+from app.model.response.calling_event_client import CallingEventClient
 from app.model.response.incoming_call_response_client import IncomingCallResponseClient
 from app.service.chat_service import ChatService
 from app.service.message_service import MessageService
@@ -109,7 +111,6 @@ class ChatController:
         print(socket)
 
         if not socket:
-            print("socket was none")
             return
 
         client_message = WsClientMessage(
@@ -118,7 +119,19 @@ class ChatController:
         )
 
         await socket.send_json(asdict(client_message))
-        print("Message Sent")
+
+    async def handle_calling_event(self, user_self_id: str, event: CallingEventServer):
+        socket = manager.get_websocket_for_user(event.to_user_id)
+
+        if not socket:
+            return
+
+        client_message = WsClientMessage(
+            WsMessageType.calling_event.value,
+            CallingEventClient(user_self_id, event.event),
+        )
+
+        await socket.send_json(asdict(client_message))
 
 
 @lru_cache

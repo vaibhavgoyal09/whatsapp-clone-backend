@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from app.api.ws.chat_controller import ChatController, get_chat_controller
 import orjson
+from app.model.calling_event_server import CallingEventServer
 from app.model.ws_message import WsMessageType
 from app.model.incoming_call import IncomingCall
 from typing import Dict
@@ -23,7 +24,6 @@ async def messaging_websocket_route(
         while True:
             received_text = await websocket.receive_text()
             payload: Dict = orjson.loads(received_text)
-            print(payload)
             if payload["type"] == WsMessageType.message.value:
                 message = AddMessageRequest.from_dict(payload["message"], client_id)
                 await controller.send_message(client_id, message)
@@ -36,6 +36,9 @@ async def messaging_websocket_route(
             elif payload["type"] == WsMessageType.incoming_call_response.value:
                 response = IncomingCallResponse.from_dict(payload["message"])
                 await controller.send_incoming_call_response(response)
+            elif payload["type"] == WsMessageType.calling_event.value:
+                event = CallingEventServer.from_dict(payload["message"])
+                await controller.handle_calling_event(client_id, event)
 
     except WebSocketDisconnect:
         await controller.disconnect(client_id)
